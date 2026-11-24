@@ -6,6 +6,7 @@
     <meta name="theme-color" content="#1a73e8">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icon-192.svg">
     <title>JB ERP · Jewellery Business Management</title>
     <style>
         :root { --primary: #1a73e8; --primary-dark: #1557b0; --bg-color: #f4f6f9; --card-bg: #ffffff; --text-dark: #202124; --text-muted: #5f6368; --border-color: #e0e0e0; --danger: #d93025; --success: #188038; --gold: #b8860b; --warning: #e67e22; }
@@ -151,6 +152,84 @@
             .quick-link-box i { width:36px; height:36px; }
         }
         @media print { .tab-section { max-width:none; } }
+
+        /* Navigation layout: scrollable bottom bar on phones, complete top bar on wider screens. */
+        body { padding-bottom:calc(82px + env(safe-area-inset-bottom, 0px)); }
+        .bottom-nav {
+            position:fixed;
+            z-index:100;
+            left:0;
+            right:0;
+            bottom:0;
+            top:auto;
+            width:100%;
+            height:calc(64px + env(safe-area-inset-bottom, 0px));
+            padding:0 4px env(safe-area-inset-bottom, 0px);
+            margin:0;
+            transform:none;
+            display:flex;
+            justify-content:flex-start;
+            flex-wrap:nowrap;
+            overflow-x:auto;
+            overflow-y:hidden;
+            overscroll-behavior-x:contain;
+            -webkit-overflow-scrolling:touch;
+            scroll-snap-type:x proximity;
+            scrollbar-width:thin;
+        }
+        .b-nav-item {
+            position:relative;
+            flex:0 0 68px;
+            min-width:68px;
+            height:100%;
+            padding:5px 2px 3px;
+            white-space:nowrap;
+            scroll-snap-align:start;
+            font-size:10px;
+        }
+        .b-nav-item i { font-size:19px; margin-bottom:3px; }
+        .b-nav-item span { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
+        .b-nav-item.active::before { top:0; }
+        .fab { bottom:calc(80px + env(safe-area-inset-bottom, 0px)); }
+        @media (max-width:759px) {
+            .bottom-nav { justify-content:flex-start; }
+            .b-nav-item { flex:0 0 68px; min-width:68px; }
+        }
+        @media (min-width:760px) {
+            body { padding-bottom:28px; }
+            .bottom-nav {
+                top:62px;
+                bottom:auto;
+                left:50%;
+                right:auto;
+                width:min(1180px, calc(100% - 28px));
+                height:58px;
+                padding:0 6px;
+                transform:translateX(-50%);
+                display:grid;
+                grid-template-columns:repeat(9, minmax(0, 1fr));
+                overflow:visible;
+                scroll-snap-type:none;
+                border:1px solid var(--border-color);
+                border-top:0;
+                border-radius:0 0 10px 10px;
+            }
+            .b-nav-item {
+                min-width:0;
+                width:100%;
+                height:100%;
+                padding:5px 2px;
+                font-size:11px;
+                overflow:hidden;
+            }
+            .b-nav-item i { font-size:19px; }
+            .fab { bottom:24px; }
+            .tab-section { padding-top:128px; }
+        }
+        @media (min-width:760px) and (max-width:950px) {
+            .b-nav-item { font-size:9px; }
+            .b-nav-item i { font-size:17px; }
+        }
     </style>
 </head>
 <body>
@@ -391,6 +470,7 @@
     <!-- 7. MENU & SETTINGS TAB -->
     <section id="tab-menu" class="tab-section">
         <div style="padding:15px 14px 5px;"><span class="title-sm" style="color:var(--primary-dark);font-size:14px;">Settings & Business Control Center</span></div>
+        <div class="card" style="cursor:default;background:#fff8e8;border-left:4px solid var(--warning);font-size:12px;line-height:1.5;">Business records and settings are stored in this browser on this device. No Cloudflare database or cross-device sync backend is configured in this project; download backups regularly and keep them secure.</div>
         <div class="card" style="cursor:default;border-left:4px solid var(--primary);">
             <div class="flex-between"><div><strong>Signed-in account</strong><div id="menuOperatorSummary" style="color:var(--text-muted);margin-top:5px;">Owner setup mode</div></div><button type="button" class="btn-sm-edit" onclick="openOperatorLogin()">Switch account</button></div>
             <small style="display:block;color:#777;margin-top:8px;">Access to settings and actions depends on the account role and permissions below.</small>
@@ -433,7 +513,18 @@
             <div class="settings-row"><span>Delivery challan</span><input id="modDeliveryChallan" type="checkbox" checked></div>
             <button class="btn-primary" style="margin-top:10px;" onclick="saveModuleSettings()">Save Module Settings</button><p style="font-size:11px;color:#777;margin-top:8px;">These switches store module preferences. Modules without a dedicated transaction workflow are not activated by hiding/showing them.</p>
         </div></details>
-        <details class="settings-group"><summary>Backup Preferences</summary><div class="settings-body"><div class="settings-row"><span>Remind me to download a backup</span><select id="cfgBackupReminder" class="form-control" style="max-width:160px;"><option value="off">Off</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div><button class="btn-primary" style="margin-top:10px;" onclick="saveAppPreferences()">Save Backup Preference</button><p style="font-size:11px;color:#777;margin-top:8px;">Automatic scheduled backup is unavailable offline; use Download Backup regularly.</p></div></details>
+        <details class="settings-group"><summary>Backup Preferences</summary><div class="settings-body">
+            <p style="font-size:12px;color:#666;line-height:1.5;margin-bottom:10px;">Backups include JB ERP records, settings, and local login accounts. Keep backup files private. Restore replaces this device’s JB ERP data only; unrelated browser data is preserved.</p>
+            <div class="settings-row"><span>Remind me to download a backup</span><select id="cfgBackupReminder" class="form-control" style="max-width:160px;"><option value="off">Off</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>
+            <button class="btn-primary" style="margin-top:10px;" onclick="saveAppPreferences()">Save Backup Preference</button>
+            <div class="settings-row" style="margin-top:10px;"><label for="backupEncryptToggle">Encrypt backup with a password</label><input id="backupEncryptToggle" type="checkbox" onchange="toggleBackupPassword()"></div>
+            <div class="form-group" id="backupPasswordRow" style="display:none;"><label for="backupPassword">Backup password (8+ characters)</label><input id="backupPassword" type="password" autocomplete="new-password" class="form-control" minlength="8" placeholder="Keep this password safe; it cannot be recovered"></div>
+            <div class="grid-2"><button class="btn-outline" onclick="downloadBackup()">Download Backup</button><button class="btn-outline" onclick="shareBackup()">Share Backup</button></div>
+            <input id="backupFileInput" type="file" accept="application/json,.json" style="display:none" onchange="restoreBackup(event)">
+            <button class="btn-outline" style="margin-top:8px;" onclick="document.getElementById('backupFileInput').click()">Restore Backup · Preview First</button>
+            <div id="backupLastSaved" style="font-size:11px;color:#777;margin-top:8px;"></div>
+            <p style="font-size:11px;color:#777;margin-top:8px;">Encrypted exports use a password-derived AES-GCM key. Plain exports contain local login hashes and should be stored securely. Automatic reminders are local prompts, not scheduled backups.</p>
+        </div></details>
         <details class="settings-group"><summary>Business Profile, Tax & GST</summary><div class="settings-body">
             <div class="grid-2"><div class="form-group"><label>Business / Invoice Name</label><input id="cfgBusinessName" class="form-control" placeholder="Jewellery shop name"></div><div class="form-group"><label>Phone</label><input id="cfgBusinessPhone" class="form-control" type="tel" placeholder="Business phone"></div></div>
             <div class="form-group"><label>Address</label><input id="cfgBusinessAddress" class="form-control" placeholder="Shop address"></div>
@@ -549,6 +640,14 @@
         <div id="customerPortalRecords"></div>
     </section>
     <div id="toast">✅ Saved Successfully!</div>
+    <div id="backupPreviewOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-labelledby="backupPreviewTitle" style="z-index:12000;">
+        <div class="pin-card" style="max-width:560px;max-height:90vh;overflow:auto;">
+            <h2 id="backupPreviewTitle" style="font-size:18px;color:var(--primary-dark);margin-bottom:8px;">Review Backup Restore</h2>
+            <div id="backupPasswordUnlock" style="display:none;"><p style="font-size:12px;color:#666;margin-bottom:10px;">This backup is encrypted. Enter its password to validate and preview its contents.</p><div class="form-group"><label for="backupRestorePassword">Backup password</label><input id="backupRestorePassword" class="form-control" type="password" autocomplete="current-password"></div><button class="btn-primary" type="button" onclick="unlockBackupPreview()">Unlock & Validate</button></div>
+            <div id="backupPreviewContent" style="display:none;"></div>
+            <div class="grid-2" style="margin-top:12px;"><button id="backupRestoreConfirm" class="btn-primary" type="button" style="margin-top:0;background:var(--danger);display:none;" onclick="confirmBackupRestore()">Replace JB ERP Data</button><button class="btn-outline" type="button" onclick="closeBackupPreview()">Cancel</button></div>
+        </div>
+    </div>
     <div id="customerLoginOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-labelledby="customerLoginTitle">
         <form class="pin-card" onsubmit="loginCustomer(event)">
             <h2 id="customerLoginTitle" style="font-size:18px;color:var(--primary-dark);margin-bottom:8px;">Customer Login</h2>
@@ -814,7 +913,15 @@
             if(settings.passcodeEnabled && localStorage.getItem(PASSCODE_HASH_KEY)) lockApplication();
         }
         if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(error => console.warn('Service worker registration failed:', error)));
+            navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), { once:true });
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
+                    registration.update().catch(() => {});
+                } catch(error) {
+                    console.warn('Service worker registration failed:', error);
+                }
+            });
         }
         window.addEventListener('beforeunload', event => { if(appPreferences().unsavedWarning && [...document.querySelectorAll('.modal-overlay')].some(modal=>modal.style.display==='flex')) { event.preventDefault(); event.returnValue=''; } });
 
@@ -898,15 +1005,16 @@
             renderLoyaltyAdmin();
         }
         function recordLoyaltyForApprovedSale(sale) {
-            if(!sale?.loyaltyApproved || !sale.loyaltyId || sale.customerType==='B2B') return;
+            if(!sale?.loyaltyApproved || !sale.loyaltyId || sale.customerType==='B2B' || sale.loyaltyEligible===false) return;
             const config=loyaltySettings(), total=Number(sale.total)||0, pending=Number(sale.payments?.pending)||0;
-            if(!config.enabled || sale.loyaltyEligible===false || total<config.minBillAmount || (config.timing==='paid'&&pending>0)) return;
+            const eligible=total>=config.minBillAmount && (config.timing!=='paid'||pending<=0);
+            if(!eligible || (!config.enabled && !config.referralEnabled)) return;
             const account=customerAccounts().find(item=>normalizeParty(item.name)===normalizeParty(sale.customer));
             if(!account) return;
             const data=loyaltyData(), now=new Date().toISOString();
             const hasRef=(type,refId)=>data.ledger.some(row=>row.type===type&&row.refId===refId);
             const purchaseRef=`sale:${sale.loyaltyId}`;
-            if(!hasRef('purchase-credit',purchaseRef)) {
+            if(config.enabled && !hasRef('purchase-credit',purchaseRef)) {
                 const points=Math.floor(total/config.rupeesPerPoint);
                 if(points>0) data.ledger.push({id:`loyalty_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,accountId:account.id,type:'purchase-credit',points,refId:purchaseRef,billId:sale.loyaltyId,amount:total,date:now,note:`Approved sale bill · ₹${total.toLocaleString('en-IN')}`});
             }
@@ -1256,11 +1364,7 @@
         }
         function applyCurrentPermissions() {
             const active=currentOperator();
-            document.querySelectorAll('.b-nav-item').forEach((button,index)=>{
-                const permissions=['viewSales','viewStock','viewHistory','manageKarigar','viewLedgers','viewReports','manageBusiness','viewReports','manageSettings'];
-                const allowed=!localUsers().length || hasPermission(permissions[index]) || (index===8&&hasPermission('manageUsers'));
-                button.style.display=allowed?'':'none';
-            });
+            // Keep every destination visible; switchTab still enforces access when a destination is opened.
             const actionPermissions={
                 openSaleModal:'createSales',openOrderModal:'createSales',openPurchaseModal:'createPurchases',openPurOrderModal:'createPurchases',
                 executeSaleSave:'createSales',executeOrderSave:'createSales',executePurchaseSave:'createPurchases',executePurchaseOrderSave:'createPurchases',
@@ -1294,24 +1398,184 @@
             }
         }
         renderPermissionEditor();
-        function downloadBackup() {
+        const BACKUP_INTERNAL_KEYS = new Set(['jb_backup_imported_fingerprints','jb_backup_last_created','jb_backup_last_reminder']);
+        let pendingBackupRestore = null;
+        function backupStorageSnapshot() {
+            const storage={};
+            for(let i=0;i<localStorage.length;i++) {
+                const key=localStorage.key(i);
+                if(key && key.startsWith('jb_') && !BACKUP_INTERNAL_KEYS.has(key)) storage[key]=localStorage.getItem(key);
+            }
+            return Object.fromEntries(Object.entries(storage).sort(([a],[b])=>a.localeCompare(b)));
+        }
+        function canonicalBackupPayload(payload) {
+            return JSON.stringify({format:'JB ERP local backup',version:2,createdAt:payload.createdAt,storage:Object.fromEntries(Object.entries(payload.storage).sort(([a],[b])=>a.localeCompare(b)))});
+        }
+        async function backupSha256(text) {
+            if(!window.crypto?.subtle) throw new Error('Secure backup integrity checks require HTTPS or localhost in a browser with Web Crypto support.');
+            const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+            return [...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
+        }
+        function bytesToBase64(bytes) { let binary=''; new Uint8Array(bytes).forEach(byte=>binary+=String.fromCharCode(byte)); return btoa(binary); }
+        function base64ToBytes(value) { const binary=atob(value); return Uint8Array.from(binary,char=>char.charCodeAt(0)); }
+        async function deriveBackupKey(password,salt,iterations) {
+            const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
+            return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+        }
+        async function buildBackupBlob() {
+            const createdAt=new Date().toISOString();
+            const payload={format:'JB ERP local backup',version:2,createdAt,storage:backupStorageSnapshot()};
+            const encrypt=!!document.getElementById('backupEncryptToggle')?.checked;
+            let envelope;
+            if(encrypt) {
+                const password=textVal('backupPassword');
+                if(password.length<8) throw new Error('Use a backup password with at least 8 characters.');
+                const iterations=250000,salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+                const key=await deriveBackupKey(password,salt,iterations);
+                const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(canonicalBackupPayload(payload)));
+                envelope={format:'JB ERP local backup',version:2,encrypted:true,kdf:'PBKDF2-SHA-256',iterations,salt:bytesToBase64(salt),iv:bytesToBase64(iv),ciphertext:bytesToBase64(ciphertext)};
+            } else {
+                envelope={...payload,encrypted:false,checksum:await backupSha256(canonicalBackupPayload(payload))};
+            }
+            return {blob:new Blob([JSON.stringify(envelope,null,2)],{type:'application/json'}),createdAt,encrypted:encrypt};
+        }
+        function backupDownloadName(createdAt) { return `jewarbook-backup-${createdAt.slice(0,10)}${document.getElementById('backupEncryptToggle')?.checked?'-encrypted':''}.json`; }
+        function noteBackupCreated(createdAt) {
+            localStorage.setItem('jb_backup_last_created',createdAt);
+            const label=document.getElementById('backupLastSaved'); if(label) label.textContent=`Last backup created: ${new Date(createdAt).toLocaleString()}`;
+        }
+        function toggleBackupPassword() {
+            const enabled=!!document.getElementById('backupEncryptToggle')?.checked;
+            const row=document.getElementById('backupPasswordRow'); if(row) row.style.display=enabled?'block':'none';
+        }
+        async function downloadBackup() {
             if(!requirePermission('manageBackup','download backup')) return;
-            const data={format:'JB ERP local backup',version:1,createdAt:new Date().toISOString(),storage:{}};
-            for(let i=0;i<localStorage.length;i++){ const key=localStorage.key(i); data.storage[key]=localStorage.getItem(key); }
-            const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}), url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download=`jewarbook-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); showToast('Backup downloaded.');
+            try {
+                const result=await buildBackupBlob(),url=URL.createObjectURL(result.blob),a=document.createElement('a');
+                a.href=url;a.download=backupDownloadName(result.createdAt);a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+                noteBackupCreated(result.createdAt);showToast(result.encrypted?'Encrypted backup downloaded.':'Backup downloaded.');
+            } catch(error) { alert(error.message||'Could not create backup.'); }
         }
         async function shareBackup() {
             if(!requirePermission('manageBackup','share backup')) return;
-            const data={format:'JB ERP local backup',version:1,createdAt:new Date().toISOString(),storage:{}};
-            for(let i=0;i<localStorage.length;i++){ const key=localStorage.key(i); data.storage[key]=localStorage.getItem(key); }
-            const file=new File([JSON.stringify(data,null,2)],'jewarbook-backup.json',{type:'application/json'});
-            if(navigator.share && navigator.canShare?.({files:[file]})){ try { await navigator.share({files:[file],title:'JewarBook backup'}); return; } catch(e) {} }
-            downloadBackup();
+            try {
+                const result=await buildBackupBlob(),file=new File([result.blob],backupDownloadName(result.createdAt),{type:'application/json'});
+                if(navigator.share&&navigator.canShare?.({files:[file]})) {
+                    try { await navigator.share({files:[file],title:'JB ERP backup'});noteBackupCreated(result.createdAt);return; } catch(error) { if(error.name==='AbortError') return; }
+                }
+                const url=URL.createObjectURL(result.blob),a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);noteBackupCreated(result.createdAt);
+            } catch(error) { alert(error.message||'Could not create backup.'); }
         }
-        function restoreBackup(event) {
+        function backupRecordSummary(storage) {
+            const labels={jb_customer_accounts:'Customer accounts',jb_local_users:'Staff / admin accounts',jb_sell_orders:'Sale orders',jb_sale_logs:'Sale bills',jb_purchase_orders:'Purchase orders',jb_purchase_logs:'Purchase bills',jb_karigar_txns:'Karigar ledger entries',jb_operating_expenses:'Expenses',jb_estimates:'Estimates',jb_girvi_records:'Girvi records',jb_emi_sales:'EMI schemes',jb_kitty_records:'Kitty records',jb_cash_metal_entries:'Cash / metal vouchers',jb_credit_notes:'Credit notes',jb_loyalty_data:'Loyalty ledger',jb_customer_chat:'Customer chat'};
+            return Object.entries(labels).map(([key,label])=>{let count=0;try{const value=JSON.parse(storage[key]||'[]');count=Array.isArray(value)?value.length:(Array.isArray(value.ledger)?value.ledger.length+((value.withdrawals||[]).length):Object.keys(value).length);}catch(error){}return `<div class="settings-row"><span>${escapeHtml(label)}</span><b>${count}</b></div>`;}).join('');
+        }
+        function currentBackupFingerprintSet() { const value=safeGet('jb_backup_imported_fingerprints',[]);return Array.isArray(value)?value:[]; }
+        function validateBackupStorage(storage) {
+            if(!storage||typeof storage!=='object'||Array.isArray(storage)) throw new Error('Backup data section is missing or invalid.');
+            const entries=Object.entries(storage);
+            if(!entries.length) throw new Error('Backup contains no JB ERP data.');
+            if(entries.length>1000) throw new Error('Backup contains an unreasonable number of storage entries.');
+            for(const [key,value] of entries) {
+                if(!/^jb_[a-z0-9_-]+$/i.test(key)||BACKUP_INTERNAL_KEYS.has(key)) throw new Error(`Unsupported backup storage key: ${key}`);
+                if(typeof value!=='string'||value.length>50*1024*1024) throw new Error(`Invalid or oversized value for ${key}.`);
+                if(/^[\s]*[\[{]/.test(value)) { try { JSON.parse(value); } catch(error) { throw new Error(`Stored data for ${key} is corrupt.`); } }
+            }
+            return Object.fromEntries(entries.sort(([a],[b])=>a.localeCompare(b)));
+        }
+        async function decodeAndValidateBackup(raw,password='') {
+            if(raw?.format!=='JB ERP local backup') throw new Error('This is not a JB ERP backup file.');
+            let payload,legacy=false;
+            if(raw.encrypted===true) {
+                if(raw.version!==2||raw.kdf!=='PBKDF2-SHA-256'||!Number.isInteger(raw.iterations)||raw.iterations<100000||raw.iterations>1000000) throw new Error('Encrypted backup settings are unsupported or invalid.');
+                if(!password) throw new Error('Enter the password for this encrypted backup.');
+                try {
+                    const key=await deriveBackupKey(password,base64ToBytes(raw.salt),raw.iterations);
+                    const clear=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64ToBytes(raw.iv)},key,base64ToBytes(raw.ciphertext));
+                    payload=JSON.parse(new TextDecoder().decode(clear));
+                } catch(error) { throw new Error('Could not decrypt the backup. Check the password and file integrity.'); }
+            } else {
+                if(!raw.storage||typeof raw.storage!=='object') throw new Error('Backup data section is missing or invalid.');
+                payload={format:raw.format,version:raw.version,createdAt:raw.createdAt,storage:raw.storage};
+                if(raw.version===1) legacy=true;
+                else if(raw.version===2) {
+                    if(raw.encrypted!==false||typeof raw.checksum!=='string') throw new Error('Backup integrity information is missing.');
+                    const expected=await backupSha256(canonicalBackupPayload(payload));
+                    if(expected!==raw.checksum) throw new Error('Backup integrity check failed. The file may be damaged or modified.');
+                } else throw new Error('This backup version is not supported.');
+            }
+            if(payload.format!=='JB ERP local backup'||![1,2].includes(payload.version)||!payload.createdAt) throw new Error('Backup header is invalid.');
+            payload.storage=validateBackupStorage(payload.storage);
+            const fingerprint=await backupSha256(canonicalBackupPayload({...payload,version:2}));
+            return {payload,fingerprint,legacy,encrypted:raw.encrypted===true};
+        }
+        function openBackupPreview(parsed) {
+            pendingBackupRestore=parsed;
+            const isDuplicate=currentBackupFingerprintSet().includes(parsed.fingerprint);
+            setHtml('backupPreviewContent',`<div class="form-card" style="background:#f7fbff;"><b>File:</b> ${escapeHtml(parsed.fileName||'JB ERP backup')}<br><b>Created:</b> ${escapeHtml(new Date(parsed.payload.createdAt).toLocaleString())}<br><b>Format:</b> Version ${parsed.payload.version}${parsed.encrypted?' · Password-encrypted':''}${parsed.legacy?' · Legacy file without checksum':''}<br><b>JB ERP storage entries:</b> ${Object.keys(parsed.payload.storage).length}</div><strong>Records in this backup</strong>${backupRecordSummary(parsed.payload.storage)}<div class="form-card" style="margin-top:10px;background:#fff8e8;color:#714f00;">Restore replaces matching JB ERP records, settings and local account data on this device. Unrelated browser data is preserved. Save a current backup first if you may need today’s data.</div>${parsed.legacy?'<p style="font-size:11px;color:#9a6700;margin-top:8px;">Legacy backup has no cryptographic checksum; its contents were structurally validated only.</p>':''}${isDuplicate?'<p style="color:var(--danger);font-weight:bold;margin-top:8px;">This exact backup was already restored on this device. Import blocked to prevent duplicate restore.</p>':''}`);
+            document.getElementById('backupPreviewContent').style.display='block';
+            document.getElementById('backupPasswordUnlock').style.display='none';
+            const button=document.getElementById('backupRestoreConfirm');button.style.display='block';button.disabled=isDuplicate;
+            document.getElementById('backupPreviewOverlay').style.display='flex';
+        }
+        function closeBackupPreview() { document.getElementById('backupPreviewOverlay').style.display='none';pendingBackupRestore=null;setVal('backupRestorePassword',''); }
+        async function unlockBackupPreview() {
+            if(!pendingBackupRestore?.raw) return;
+            try {
+                const parsed=await decodeAndValidateBackup(pendingBackupRestore.raw,textVal('backupRestorePassword'));
+                parsed.fileName=pendingBackupRestore.fileName;openBackupPreview(parsed);setVal('backupRestorePassword','');
+            } catch(error) { alert(error.message||'Could not validate backup.'); }
+        }
+        async function restoreBackup(event) {
             if(!requirePermission('manageBackup','restore backup')) { event.target.value=''; return; }
             const file=event.target.files?.[0]; if(!file) return;
-            const reader=new FileReader(); reader.onload=() => { try { const backup=JSON.parse(reader.result); if(!backup.storage || typeof backup.storage !== 'object') throw new Error('Invalid backup'); if(!confirm('Restore backup? Current local data will be replaced.')) return; localStorage.clear(); Object.entries(backup.storage).forEach(([key,value]) => localStorage.setItem(key,String(value))); location.reload(); } catch(e) { alert('Backup file is invalid or unreadable.'); } finally { event.target.value=''; } }; reader.readAsText(file);
+            try {
+                if(file.size>50*1024*1024) throw new Error('Backup file exceeds the 50 MB safety limit.');
+                const raw=JSON.parse(await file.text());
+                if(raw?.encrypted===true) {
+                    pendingBackupRestore={raw,fileName:file.name};
+                    document.getElementById('backupPreviewContent').style.display='none';document.getElementById('backupRestoreConfirm').style.display='none';document.getElementById('backupPasswordUnlock').style.display='block';document.getElementById('backupPreviewOverlay').style.display='flex';
+                } else {
+                    const parsed=await decodeAndValidateBackup(raw);parsed.fileName=file.name;openBackupPreview(parsed);
+                }
+            } catch(error) { alert(error.message||'Backup file is invalid or unreadable.'); }
+            finally { event.target.value=''; }
+        }
+        function restoreJBStorageSafely(newStorage,fingerprint) {
+            const previous={};
+            for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key?.startsWith('jb_')&&!BACKUP_INTERNAL_KEYS.has(key))previous[key]=localStorage.getItem(key);}
+            const rollback=()=>{for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key?.startsWith('jb_')&&!BACKUP_INTERNAL_KEYS.has(key))localStorage.removeItem(key);}Object.entries(previous).forEach(([key,value])=>localStorage.setItem(key,value));};
+            try {
+                for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key?.startsWith('jb_')&&!BACKUP_INTERNAL_KEYS.has(key))localStorage.removeItem(key);}
+                Object.entries(newStorage).forEach(([key,value])=>localStorage.setItem(key,value));
+                const imported=currentBackupFingerprintSet();if(!imported.includes(fingerprint)) imported.push(fingerprint);
+                localStorage.setItem('jb_backup_imported_fingerprints',JSON.stringify(imported.slice(-50)));
+            } catch(error) {
+                try { rollback(); } catch(rollbackError) { throw new Error('Restore failed and automatic rollback was incomplete. Do not close this page; browser storage may be full.'); }
+                throw new Error('Restore could not be saved (storage may be full). Existing data was restored.');
+            }
+        }
+        function confirmBackupRestore() {
+            if(!requirePermission('manageBackup','restore backup')) return;
+            const parsed=pendingBackupRestore;if(!parsed?.payload) return alert('Unlock and validate the backup first.');
+            if(currentBackupFingerprintSet().includes(parsed.fingerprint)) return alert('This backup was already restored on this device.');
+            if(!confirm(`Restore backup created ${new Date(parsed.payload.createdAt).toLocaleString()}? Matching JB ERP data, settings and local logins will be replaced.`)) return;
+            if(!confirm('Final confirmation: replace the current JB ERP data on this device now?')) return;
+            try { restoreJBStorageSafely(parsed.payload.storage,parsed.fingerprint);closeBackupPreview();location.reload(); }
+            catch(error) { alert(error.message||'Restore failed. Existing data was not intentionally cleared.'); }
+        }
+        function renderBackupLastSaved() {
+            const label=document.getElementById('backupLastSaved'),date=localStorage.getItem('jb_backup_last_created');
+            if(label) label.textContent=date?`Last backup created: ${new Date(date).toLocaleString()}`:'No backup created on this device yet.';
+        }
+        function checkBackupReminder() {
+            const frequency=appPreferences().backupReminder;
+            if(!['weekly','monthly'].includes(frequency)||!hasPermission('manageBackup')||document.getElementById('pinLockOverlay')?.style.display==='flex') return;
+            const now=new Date(),last=localStorage.getItem('jb_backup_last_created'),days=frequency==='weekly'?7:30;
+            const due=!last||!Number.isFinite(new Date(last).getTime())||(now-new Date(last))>=days*86400000;
+            if(!due||localStorage.getItem('jb_backup_last_reminder')===now.toISOString().slice(0,10)) return;
+            localStorage.setItem('jb_backup_last_reminder',now.toISOString().slice(0,10));
+            setTimeout(()=>{if(confirm(`Your ${frequency} backup reminder is due. Download a backup now?`)) downloadBackup();},800);
         }
         function exportReportCsv() {
             if(!requirePermission('viewReports','export reports')) return;
@@ -1363,11 +1627,17 @@
         function openHistoryCategory(type) { setVal('historyTypeFilter',type); switchTab('tab-history',document.querySelectorAll('.b-nav-item')[2]); renderAllTransactions(); }
         function switchTab(id, btn) { 
             const tabPermission={'tab-home':'viewSales','tab-stock':'viewStock','tab-history':'viewHistory','tab-karigar':'manageKarigar','tab-ledgers':'viewLedgers','tab-reports':'viewReports','tab-business':'manageBusiness','tab-booking-pl':'viewReports','tab-menu':'manageSettings'}[id];
+            const tab=document.getElementById(id);
+            if(!tab || !tab.classList.contains('tab-section')) return;
             if(id==='tab-menu' && !hasPermission('manageSettings') && !hasPermission('manageUsers')) return requirePermission('manageSettings','open settings');
             if(tabPermission && id!=='tab-menu' && !requirePermission(tabPermission,'open this section')) return;
+            const tabOrder=['tab-home','tab-stock','tab-history','tab-karigar','tab-ledgers','tab-reports','tab-business','tab-booking-pl','tab-menu'];
+            const navItems=[...document.querySelectorAll('.b-nav-item')];
+            const activeButton=btn && btn.classList ? btn : navItems[tabOrder.indexOf(id)];
             document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active')); 
-            if(btn && btn.classList) { document.querySelectorAll('.b-nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); } 
-            document.getElementById(id).classList.add('active'); window.scrollTo(0, 0); 
+            navItems.forEach(item=>item.classList.toggle('active',item===activeButton));
+            if(activeButton && activeButton.scrollIntoView && window.matchMedia('(max-width: 759px)').matches) activeButton.scrollIntoView({block:'nearest',inline:'nearest'});
+            tab.classList.add('active'); window.scrollTo(0, 0); 
             if(id === 'tab-karigar') renderKarigarLedgers(); if(id === 'tab-history') renderAllTransactions();
             if(id === 'tab-stock') renderItemStock(); if(id === 'tab-ledgers') renderPartyLedgers('customer'); if(id === 'tab-reports') renderReports(); if(id === 'tab-business') renderBusinessRecords();
         }
@@ -2610,7 +2880,7 @@
             setHtml('karigarLedgerList', html || '<div class="card" style="cursor:default; color:#777;">No karigar entries yet.</div>');
         }
 
-        window.onload = () => { initHomeRates(); loadAppPreferences(); loadModuleSettings(); loadSecurityPreferences(); initializePinLock(); renderFirmProfiles(); loadBusinessSettings(); renderPermissionEditor(); setVal('girviStartDate', new Date().toISOString().slice(0,10)); updateMetalRecordPreview('girvi'); updateMetalRecordPreview('emi'); openBusinessForm('none'); renderDashboard(); renderKarigarLedgers(); renderAllTransactions(); renderBusinessRecords(); renderReports(); renderLocalUsers(); customerAccounts(); renderLoyaltyAdmin(); if(localUsers().length){ activeOperatorId=null; applyCurrentPermissions(); if(localUsers().every(user=>user.pinHash)) openOperatorLogin(); else showToast('Legacy staff records need PINs. Secure each account in Users & Permissions.'); } };
+        window.onload = () => { initHomeRates(); loadAppPreferences(); loadModuleSettings(); loadSecurityPreferences(); initializePinLock(); renderFirmProfiles(); loadBusinessSettings(); renderPermissionEditor(); setVal('girviStartDate', new Date().toISOString().slice(0,10)); updateMetalRecordPreview('girvi'); updateMetalRecordPreview('emi'); openBusinessForm('none'); renderDashboard(); renderKarigarLedgers(); renderAllTransactions(); renderBusinessRecords(); renderReports(); renderLocalUsers(); customerAccounts(); renderLoyaltyAdmin(); renderBackupLastSaved(); if(localUsers().length){ activeOperatorId=null; applyCurrentPermissions(); if(localUsers().every(user=>user.pinHash)) openOperatorLogin(); else showToast('Legacy staff records need PINs. Secure each account in Users & Permissions.'); } setTimeout(checkBackupReminder,1200); };
     </script>
 </body>
 </html>
