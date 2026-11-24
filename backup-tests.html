@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JB ERP Backup V2 Isolated Tests</title>
+    <style>
+        body { font: 15px/1.5 system-ui, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 16px; color: #202124; }
+        h1 { font-size: 1.4rem; }
+        .notice { padding: 12px; background: #fff8e8; border: 1px solid #eed18a; border-radius: 8px; }
+        button { padding: 10px 14px; margin: 12px 0; cursor: pointer; }
+        #results { padding-left: 22px; }
+        #results li { margin: 6px 0; }
+        .pass { color: #188038; } .fail { color: #b3261e; }
+        iframe { position: fixed; width: 1px; height: 1px; left: -10px; bottom: 0; border: 0; }
+    </style>
+</head>
+<body>
+    <h1>Backup V2 · Isolated Browser Tests</h1>
+    <p class="notice"><b>Safety:</b> The app under test runs in a same-origin iframe with an in-memory localStorage replacement enabled before app code executes. It does not read, change, or clear this browser profile’s business records. No successful restore is performed.</p>
+    <button id="runTests" type="button" disabled>Preparing isolated test app…</button>
+    <p id="summary" aria-live="polite"></p>
+    <ol id="results"></ol>
+    <iframe id="appUnderTest" title="Isolated JB ERP test instance" src="./index.html?backup-test=1"></iframe>
+    <script>
+        const runButton = document.getElementById('runTests');
+        const frame = document.getElementById('appUnderTest');
+        const resultList = document.getElementById('results');
+        const summary = document.getElementById('summary');
+
+        function report(name, error) {
+            const item = document.createElement('li');
+            item.className = error ? 'fail' : 'pass';
+            item.textContent = `${error ? 'FAIL' : 'PASS'} · ${name}${error ? ` — ${error.message || error}` : ''}`;
+            resultList.appendChild(item);
+        }
+        function assert(condition, message) { if (!condition) throw new Error(message); }
+        async function rejects(action, expectedText) {
+            let caught;
+            try { await action(); } catch (error) { caught = error; }
+            assert(caught, 'Expected the operation to reject.');
+            if (expectedText) assert(String(caught.message).toLowerCase().includes(expectedText.toLowerCase()), `Expected error containing “${expectedText}”, got “${caught.message}”.`);
+        }
+
+        frame.addEventListener('load', () => {
+            const app = frame.contentWindow;
+            if (!app.__backupTestStorage || typeof app.buildBackupBlob !== 'function') {
+                runButton.textContent = 'Isolated test app failed to initialize';
+                summary.textContent = 'Tests cannot run: test-mode storage hook or backup code was not found.';
+                return;
+            }
+            runButton.disabled = false;
+            runButton.textContent = 'Run isolated backup tests';
+        });
+
+        runButton.addEventListener('click', async () => {
+            runButton.disabled = true;
+            resultList.replaceChildren();
+            const app = frame.contentWindow;
+            const store = app.__backupTestStorage;
+            const seed = () => {
+                store.clear();
+                store.setItem('unrelated_app_data', 'must stay untouched');
+                store.setItem('jb_sale_logs', JSON.stringify([{ customer: 'Test Customer', total: 1250 }]));
+                store.setItem('jb_business_settings', JSON.stringify({ businessName: 'Isolated Test Firm' }));
+            };
+            const readBlob = async blob => JSON.parse(await blob.text());
+            let passed = 0, failed = 0;
+            const test = async (name, body) => {
+                try { await body(); passed++; report(name); }
+                catch (error) { failed++; report(name, error); }
+            };
+
+            try {
+                seed();
+                await test('Plain export includes business records and a valid SHA-256 checksum', async () => {
+                    app.document.getElementById('backupEncryptToggle').checked = false;
+                    const { blob } = await app.buildBackupBlob();
+                    const raw = await readBlob(blob);
+                    const decoded = await app.decodeAndValidateBackup(raw);
+                    assert(raw.encrypted === false && raw.version === 2, 'Expected an unencrypted V2 envelope.');
+                    assert(decoded.payload.storage.jb_sale_logs.includes('Test Customer'), 'Export omitted seeded test sales.');
+                    assert(decoded.fingerprint, 'Expected a validated backup fingerprint.');
+                });
+
+                await test('Encrypted export decrypts and validates with its password', async () => {
+                    app.document.getElementById('backupEncryptToggle').checked = true;
+                    app.document.getElementById('backupPassword').value = 'isolated-test-password';
+                    const { blob } = await app.buildBackupBlob();
+                    const raw = await readBlob(blob);
+                    const decoded = await app.decodeAndValidateBackup(raw, 'isolated-test-password');
+                    assert(raw.encrypted === true, 'Expected an encrypted V2 envelope.');
+                    assert(decoded.payload.storage.jb_business_settings.includes('Isolated Test Firm'), 'Decrypted content did not match test data.');
+                });
+
+                await test('Wrong password is rejected', async () => {
+                    const { blob } = await app.buildBackupBlob();
+                    await rejects(() => app.decodeAndValidateBackup(await readBlob(blob), 'wrong-password'), 'decrypt');
+                });
+
+                await test('Corrupted plain backup fails integrity validation', async () => {
+                    app.document.getElementById('backupEncryptToggle').checked = false;
+                    const { blob } = await app.buildBackupBlob();
+                    const raw = await readBlob(blob);
+                    raw.storage.jb_sale_logs = JSON.stringify([{ customer: 'Tampered' }]);
+                    await rejects(() => app.decodeAndValidateBackup(raw), 'integrity');
+                });
+
+                let validParsed;
+                await test('Legacy V1 backup is accepted with legacy marker', async () => {
+                    const raw = { format:'JB ERP local backup', version:1, createdAt:new Date().toISOString(), storage:{ jb_sale_logs:JSON.stringify([{ customer:'Legacy Test' }]) } };
+                    const parsed = await app.decodeAndValidateBackup(raw);
+                    assert(parsed.legacy === true, 'Expected legacy backup marker.');
+                    validParsed = parsed;
+                });
+
+                await test('Restore preview renders counts and offers explicit confirmation', async () => {
+                    app.openBackupPreview({ ...validParsed, fileName:'isolated-v1.json' });
+                    assert(app.document.getElementById('backupPreviewOverlay').style.display === 'flex', 'Preview overlay was not opened.');
+                    assert(app.document.getElementById('backupPreviewContent').textContent.includes('Legacy Test') === false, 'Preview should show summary counts, not raw record contents.');
+                    assert(app.document.getElementById('backupRestoreConfirm').style.display === 'block', 'Confirmation control was not shown.');
+                    app.closeBackupPreview();
+                });
+
+                await test('Duplicate fingerprint blocks restore confirmation', async () => {
+                    const duplicate = { ...validParsed, fileName:'duplicate.json' };
+                    store.setItem('jb_backup_imported_fingerprints', JSON.stringify([duplicate.fingerprint]));
+                    app.openBackupPreview(duplicate);
+                    assert(app.document.getElementById('backupRestoreConfirm').disabled, 'Duplicate restore button should be disabled.');
+                    let confirmCalls = 0;
+                    const originalConfirm = app.confirm;
+                    app.confirm = () => { confirmCalls++; return true; };
+                    app.confirmBackupRestore();
+                    app.confirm = originalConfirm;
+                    assert(confirmCalls === 0, 'Duplicate import unexpectedly reached confirmation.');
+                    app.closeBackupPreview();
+                });
+
+                await test('Confirmation cancellation leaves isolated data unchanged', async () => {
+                    seed();
+                    app.openBackupPreview({ ...validParsed, fileName:'cancel-test.json' });
+                    let calls = 0;
+                    const originalConfirm = app.confirm;
+                    app.confirm = () => ++calls === 1;
+                    app.confirmBackupRestore();
+                    app.confirm = originalConfirm;
+                    assert(calls === 2, 'Expected both confirmation steps to be requested.');
+                    assert(store.getItem('jb_sale_logs').includes('Test Customer'), 'Cancelled confirmation changed current test data.');
+                    app.closeBackupPreview();
+                });
+
+                await test('Restore rollback recovers prior JB data after a simulated storage write failure', async () => {
+                    seed();
+                    const originalSales = store.getItem('jb_sale_logs');
+                    store.failNextSetFor = 'jb_new_restore_key';
+                    let caught;
+                    try { app.restoreJBStorageSafely({ jb_new_restore_key:'new', jb_other_restore_key:'also new' }, 'rollback-fingerprint'); }
+                    catch (error) { caught = error; }
+                    assert(caught && caught.message.includes('Existing data was restored'), 'Expected controlled restore failure with rollback message.');
+                    assert(store.getItem('jb_sale_logs') === originalSales, 'Existing test sales were not restored by rollback.');
+                    assert(store.getItem('jb_new_restore_key') === null, 'Partially restored key remained after rollback.');
+                });
+
+                await test('Restore operations preserve unrelated browser data', async () => {
+                    seed();
+                    app.restoreJBStorageSafely({ jb_sale_logs:JSON.stringify([{ customer:'Restored Test' }]) }, 'preserve-fingerprint');
+                    assert(store.getItem('unrelated_app_data') === 'must stay untouched', 'Unrelated storage key was modified.');
+                    assert(store.getItem('jb_sale_logs').includes('Restored Test'), 'Test restore did not write the replacement test record.');
+                });
+            } finally {
+                store.clear();
+                app.document.getElementById('backupEncryptToggle').checked = false;
+                app.document.getElementById('backupPassword').value = '';
+                app.closeBackupPreview();
+                summary.textContent = `${passed} passed · ${failed} failed. All test storage was isolated and cleared.`;
+                runButton.disabled = false;
+                runButton.textContent = 'Run isolated backup tests again';
+            }
+        });
+    </script>
+</body>
+</html>
