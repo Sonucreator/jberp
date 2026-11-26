@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#1a73e8">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="icon-192.svg">
     <title>JB ERP · Jewellery Business Management</title>
     <style>
         :root { --primary: #1a73e8; --primary-dark: #1557b0; --bg-color: #f4f6f9; --card-bg: #ffffff; --text-dark: #202124; --text-muted: #5f6368; --border-color: #e0e0e0; --danger: #d93025; --success: #188038; --gold: #b8860b; --warning: #e67e22; }
@@ -115,8 +114,6 @@
             .header { gap:7px; padding-left:10px; padding-right:10px; font-size:16px; }
             .header .btn-sm-edit { padding:6px 8px; font-size:10px; }
             .tab-section { padding-top:2px; }
-            .bottom-nav { justify-content:flex-start; flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
-            .b-nav-item { flex:0 0 max(70px, 12.5vw); min-width:max(70px, 12.5vw); white-space:nowrap; scroll-snap-align:start; }
         }
         .logo-icon { background:#1769aa; border-radius:9px; width:36px; height:36px; font-size:13px; }
         .header > div:last-child { letter-spacing:.2px; }
@@ -152,84 +149,6 @@
             .quick-link-box i { width:36px; height:36px; }
         }
         @media print { .tab-section { max-width:none; } }
-
-        /* Navigation layout: scrollable bottom bar on phones, complete top bar on wider screens. */
-        body { padding-bottom:calc(82px + env(safe-area-inset-bottom, 0px)); }
-        .bottom-nav {
-            position:fixed;
-            z-index:100;
-            left:0;
-            right:0;
-            bottom:0;
-            top:auto;
-            width:100%;
-            height:calc(64px + env(safe-area-inset-bottom, 0px));
-            padding:0 4px env(safe-area-inset-bottom, 0px);
-            margin:0;
-            transform:none;
-            display:flex;
-            justify-content:flex-start;
-            flex-wrap:nowrap;
-            overflow-x:auto;
-            overflow-y:hidden;
-            overscroll-behavior-x:contain;
-            -webkit-overflow-scrolling:touch;
-            scroll-snap-type:x proximity;
-            scrollbar-width:thin;
-        }
-        .b-nav-item {
-            position:relative;
-            flex:0 0 68px;
-            min-width:68px;
-            height:100%;
-            padding:5px 2px 3px;
-            white-space:nowrap;
-            scroll-snap-align:start;
-            font-size:10px;
-        }
-        .b-nav-item i { font-size:19px; margin-bottom:3px; }
-        .b-nav-item span { max-width:100%; overflow:hidden; text-overflow:ellipsis; }
-        .b-nav-item.active::before { top:0; }
-        .fab { bottom:calc(80px + env(safe-area-inset-bottom, 0px)); }
-        @media (max-width:759px) {
-            .bottom-nav { justify-content:flex-start; }
-            .b-nav-item { flex:0 0 68px; min-width:68px; }
-        }
-        @media (min-width:760px) {
-            body { padding-bottom:28px; }
-            .bottom-nav {
-                top:62px;
-                bottom:auto;
-                left:50%;
-                right:auto;
-                width:min(1180px, calc(100% - 28px));
-                height:58px;
-                padding:0 6px;
-                transform:translateX(-50%);
-                display:grid;
-                grid-template-columns:repeat(9, minmax(0, 1fr));
-                overflow:visible;
-                scroll-snap-type:none;
-                border:1px solid var(--border-color);
-                border-top:0;
-                border-radius:0 0 10px 10px;
-            }
-            .b-nav-item {
-                min-width:0;
-                width:100%;
-                height:100%;
-                padding:5px 2px;
-                font-size:11px;
-                overflow:hidden;
-            }
-            .b-nav-item i { font-size:19px; }
-            .fab { bottom:24px; }
-            .tab-section { padding-top:128px; }
-        }
-        @media (min-width:760px) and (max-width:950px) {
-            .b-nav-item { font-size:9px; }
-            .b-nav-item i { font-size:17px; }
-        }
     </style>
 </head>
 <body>
@@ -470,7 +389,6 @@
     <!-- 7. MENU & SETTINGS TAB -->
     <section id="tab-menu" class="tab-section">
         <div style="padding:15px 14px 5px;"><span class="title-sm" style="color:var(--primary-dark);font-size:14px;">Settings & Business Control Center</span></div>
-        <div class="card" style="cursor:default;background:#fff8e8;border-left:4px solid var(--warning);font-size:12px;line-height:1.5;">Business records and settings are stored in this browser on this device. No Cloudflare database or cross-device sync backend is configured in this project; download backups regularly and keep them secure.</div>
         <div class="card" style="cursor:default;border-left:4px solid var(--primary);">
             <div class="flex-between"><div><strong>Signed-in account</strong><div id="menuOperatorSummary" style="color:var(--text-muted);margin-top:5px;">Owner setup mode</div></div><button type="button" class="btn-sm-edit" onclick="openOperatorLogin()">Switch account</button></div>
             <small style="display:block;color:#777;margin-top:8px;">Access to settings and actions depends on the account role and permissions below.</small>
@@ -513,18 +431,7 @@
             <div class="settings-row"><span>Delivery challan</span><input id="modDeliveryChallan" type="checkbox" checked></div>
             <button class="btn-primary" style="margin-top:10px;" onclick="saveModuleSettings()">Save Module Settings</button><p style="font-size:11px;color:#777;margin-top:8px;">These switches store module preferences. Modules without a dedicated transaction workflow are not activated by hiding/showing them.</p>
         </div></details>
-        <details class="settings-group"><summary>Backup Preferences</summary><div class="settings-body">
-            <p style="font-size:12px;color:#666;line-height:1.5;margin-bottom:10px;">Backups include JB ERP records, settings, and local login accounts. Keep backup files private. Restore replaces this device’s JB ERP data only; unrelated browser data is preserved.</p>
-            <div class="settings-row"><span>Remind me to download a backup</span><select id="cfgBackupReminder" class="form-control" style="max-width:160px;"><option value="off">Off</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div>
-            <button class="btn-primary" style="margin-top:10px;" onclick="saveAppPreferences()">Save Backup Preference</button>
-            <div class="settings-row" style="margin-top:10px;"><label for="backupEncryptToggle">Encrypt backup with a password</label><input id="backupEncryptToggle" type="checkbox" onchange="toggleBackupPassword()"></div>
-            <div class="form-group" id="backupPasswordRow" style="display:none;"><label for="backupPassword">Backup password (8+ characters)</label><input id="backupPassword" type="password" autocomplete="new-password" class="form-control" minlength="8" placeholder="Keep this password safe; it cannot be recovered"></div>
-            <div class="grid-2"><button class="btn-outline" onclick="downloadBackup()">Download Backup</button><button class="btn-outline" onclick="shareBackup()">Share Backup</button></div>
-            <input id="backupFileInput" type="file" accept="application/json,.json" style="display:none" onchange="restoreBackup(event)">
-            <button class="btn-outline" style="margin-top:8px;" onclick="document.getElementById('backupFileInput').click()">Restore Backup · Preview First</button>
-            <div id="backupLastSaved" style="font-size:11px;color:#777;margin-top:8px;"></div>
-            <p style="font-size:11px;color:#777;margin-top:8px;">Encrypted exports use a password-derived AES-GCM key. Plain exports contain local login hashes and should be stored securely. Automatic reminders are local prompts, not scheduled backups.</p>
-        </div></details>
+        <details class="settings-group"><summary>Backup Preferences</summary><div class="settings-body"><div class="settings-row"><span>Remind me to download a backup</span><select id="cfgBackupReminder" class="form-control" style="max-width:160px;"><option value="off">Off</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select></div><button class="btn-primary" style="margin-top:10px;" onclick="saveAppPreferences()">Save Backup Preference</button><p style="font-size:11px;color:#777;margin-top:8px;">Automatic scheduled backup is unavailable offline; use Download Backup regularly.</p></div></details>
         <details class="settings-group"><summary>Business Profile, Tax & GST</summary><div class="settings-body">
             <div class="grid-2"><div class="form-group"><label>Business / Invoice Name</label><input id="cfgBusinessName" class="form-control" placeholder="Jewellery shop name"></div><div class="form-group"><label>Phone</label><input id="cfgBusinessPhone" class="form-control" type="tel" placeholder="Business phone"></div></div>
             <div class="form-group"><label>Address</label><input id="cfgBusinessAddress" class="form-control" placeholder="Shop address"></div>
@@ -566,21 +473,9 @@
             <p style="font-size:12px;color:#666;margin-bottom:10px;">Admin-managed customer login. The account name must match the party name on bills and records to link that customer’s activity.</p>
             <input type="hidden" id="customerEditIndex" value="-1">
             <div class="grid-2"><div class="form-group"><label>Customer / party name *</label><input id="customerAccountName" class="form-control" placeholder="Name used on bills"></div><div class="form-group"><label>Mobile number *</label><input id="customerAccountPhone" class="form-control" type="tel" inputmode="tel" placeholder="Mobile number"></div></div>
-            <div class="form-group"><label>Referred by code (new accounts only)</label><input id="customerAccountReferralCode" class="form-control" autocapitalize="characters" placeholder="Optional customer referral code"></div>
             <div class="form-group"><label>Customer PIN (4–12 digits) *</label><input id="customerAccountPin" class="form-control" type="password" inputmode="numeric" autocomplete="new-password" placeholder="Required for new account"></div>
             <div class="grid-2"><button class="btn-primary" style="margin-top:0;" onclick="saveCustomerAccount()">Save Customer Account</button><button class="btn-outline" onclick="resetCustomerAccountForm()">Clear Form</button></div>
             <div id="customerAccountsList" style="margin-top:12px;"></div>
-            <div class="divider"></div><strong style="display:block;color:var(--primary-dark);margin-bottom:8px;">Loyalty & Referral Settings</strong>
-            <div class="settings-row"><span>Enable loyalty rewards</span><input id="cfgLoyaltyEnabled" type="checkbox" checked></div>
-            <div class="settings-row"><span>Enable referral rewards</span><input id="cfgReferralEnabled" type="checkbox" checked></div>
-            <div class="grid-2"><div class="form-group"><label>Purchase spend per point (₹) · default 100</label><input id="cfgLoyaltyRate" type="number" min="1" step="1" class="form-control" value="100"></div><div class="form-group"><label>Minimum eligible approved bill (₹) · applies to purchase/referral</label><input id="cfgLoyaltyMinBill" type="number" min="0" step="1" class="form-control" value="0"></div></div>
-            <div class="grid-2"><div class="form-group"><label>Referrer bonus (points) · default 100</label><input id="cfgReferralPoints" type="number" min="0" step="1" class="form-control" value="100"></div><div class="form-group"><label>Minimum withdrawal (₹ / points)</label><input id="cfgLoyaltyMinWithdrawal" type="number" min="1" step="1" class="form-control" value="100"></div></div>
-            <div class="form-group"><label>Reward timing</label><select id="cfgLoyaltyTiming" class="form-control"><option value="approved">When approved bill is saved</option><option value="paid">Only when bill is fully paid</option></select></div>
-            <p style="font-size:11px;color:#777;margin:0 0 8px;">₹100 earns 1 point by default; 1 point is redeemable as ₹1. A referral bonus is awarded only once, after the referred customer's first eligible approved bill. Per-bill checkbox, reward switches, minimum bill, paid/approved timing, and withdrawal threshold control eligibility. Historic bills are not rewarded retroactively.</p>
-            <button class="btn-primary" style="margin-top:0;" onclick="saveLoyaltySettings()">Save Loyalty Settings</button>
-            <div class="divider"></div><strong style="display:block;color:var(--primary-dark);margin-bottom:8px;">Admin · Loyalty Ledger & Withdrawals</strong>
-            <div id="loyaltyAdminReport"></div><div id="loyaltyAdminLedger" style="max-height:340px;overflow:auto;"></div><div id="loyaltyAdminWithdrawals" style="margin-top:8px;"></div>
-            <p style="font-size:11px;color:#777;margin-top:8px;">Loyalty records are stored locally on this device, like other app data. Customer referral codes and wallet access do not provide server-grade identity or fraud protection.</p>
             <p style="font-size:11px;color:#777;margin-top:8px;">Records are stored on this device. Customers can only see records matching their account name; do not reuse mobile/PIN credentials. This local login is not server-grade security.</p>
         </div></details>
         <details class="settings-group"><summary>Users & Permissions · This device</summary><div class="settings-body">
@@ -603,32 +498,20 @@
         <div class="card" style="padding:0;overflow:hidden;cursor:default;margin-top:10px;"><div style="padding:14px;display:flex;align-items:center;gap:10px;cursor:pointer;color:var(--danger);" onclick="factoryReset()"><i>⚠️</i><b>Recycle Bin / Reset All Data</b></div></div>
     </section>
 
-    <!-- BOOKING PROFIT / LOSS CALCULATOR -->
-    <section id="tab-booking-pl" class="tab-section">
-        <div style="padding:15px 14px 5px;"><span class="title-sm" style="color:var(--primary-dark);font-size:14px;">Booking Profit/Loss Calculator</span></div>
-        <div class="card" style="cursor:default;border-left:4px solid var(--gold);">
-            <strong>Automatic Sale Order & Bill Analysis</strong>
-            <p style="font-size:12px;color:#666;line-height:1.5;margin:6px 0 12px;">This view reads saved Sale Orders and Sale Bills. It uses the order's saved pending balance as blocked capital and estimates the 2% monthly opportunity cost from the available delivery date. Missing booking-rate history, item cost basis, or recorded interest is flagged rather than inferred.</p>
-            <div id="bookingPLResults" aria-live="polite"></div>
-        </div>
-    </section>
-
     <!-- NAVIGATION BAR -->
-    <nav class="bottom-nav" aria-label="Main navigation">
-        <div class="b-nav-item active" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-home', this)"><i>🏠</i><span>Home</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-stock', this)"><i>💎</i><span>Stock</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-history', this)"><i>🕒</i><span>History</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-karigar', this)"><i>👨‍🏭</i><span>Karigars</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-ledgers', this)"><i>📒</i><span>Ledgers</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-reports', this)"><i>📊</i><span>Reports</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-business', this)"><i>🧾</i><span>Business</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-booking-pl', this)"><i>📈</i><span>Booking P/L</span></div>
-        <div class="b-nav-item" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}" onclick="switchTab('tab-menu', this)"><i>☰</i><span>Menu</span></div>
+    <nav class="bottom-nav">
+        <div class="b-nav-item active" onclick="switchTab('tab-home', this)"><i>🏠</i><span>Home</span></div>
+        <div class="b-nav-item" onclick="switchTab('tab-stock', this)"><i>💎</i><span>Stock</span></div>
+        <div class="b-nav-item" onclick="switchTab('tab-history', this)"><i>🕒</i><span>History</span></div>
+        <div class="b-nav-item" onclick="switchTab('tab-karigar', this)"><i>👨‍🏭</i><span>Karigars</span></div>
+        <div class="b-nav-item" onclick="switchTab('tab-ledgers', this)"><i>📒</i><span>Ledgers</span></div>
+        <div class="b-nav-item" onclick="switchTab('tab-reports', this)"><i>📊</i><span>Reports</span></div>
+        <div class="b-nav-item" onclick="switchTab('tab-business', this)"><i>🧾</i><span>Business</span></div>
+        <div class="b-nav-item" onclick="switchTab('tab-menu', this)"><i>☰</i><span>Menu</span></div>
     </nav>
 
     <section id="customerPortal" class="customer-portal" aria-live="polite">
         <div class="customer-portal-header"><div><strong style="font-size:18px;color:var(--primary-dark);">Customer Account</strong><div id="customerPortalName" style="color:var(--text-muted);margin-top:4px;"></div></div><button type="button" class="btn-sm-edit" onclick="logoutCustomerPortal()">Log out</button></div>
-        <div id="customerLoyaltyWallet"></div>
         <div class="card" style="cursor:default;"><div class="flex-between"><strong>My transactions</strong><select id="customerPortalFilter" class="form-control" style="width:auto;" onchange="renderCustomerPortal()"><option value="ALL">All activity</option><option value="SALE">Sales</option><option value="PURCHASE">Purchases</option><option value="EMI">EMI</option><option value="KITTY">Kitty</option><option value="GIRVI">Girvi</option><option value="VOUCHER">Cash / Metal</option></select></div><div id="customerPortalSummary" class="grid-3" style="margin-top:12px;text-align:center;"></div></div>
         <div class="card" style="cursor:default;border-left:4px solid var(--primary);">
             <strong>Customer Chat & Catalog</strong>
@@ -640,14 +523,6 @@
         <div id="customerPortalRecords"></div>
     </section>
     <div id="toast">✅ Saved Successfully!</div>
-    <div id="backupPreviewOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-labelledby="backupPreviewTitle" style="z-index:12000;">
-        <div class="pin-card" style="max-width:560px;max-height:90vh;overflow:auto;">
-            <h2 id="backupPreviewTitle" style="font-size:18px;color:var(--primary-dark);margin-bottom:8px;">Review Backup Restore</h2>
-            <div id="backupPasswordUnlock" style="display:none;"><p style="font-size:12px;color:#666;margin-bottom:10px;">This backup is encrypted. Enter its password to validate and preview its contents.</p><div class="form-group"><label for="backupRestorePassword">Backup password</label><input id="backupRestorePassword" class="form-control" type="password" autocomplete="current-password"></div><button class="btn-primary" type="button" onclick="unlockBackupPreview()">Unlock & Validate</button></div>
-            <div id="backupPreviewContent" style="display:none;"></div>
-            <div class="grid-2" style="margin-top:12px;"><button id="backupRestoreConfirm" class="btn-primary" type="button" style="margin-top:0;background:var(--danger);display:none;" onclick="confirmBackupRestore()">Replace JB ERP Data</button><button class="btn-outline" type="button" onclick="closeBackupPreview()">Cancel</button></div>
-        </div>
-    </div>
     <div id="customerLoginOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-labelledby="customerLoginTitle">
         <form class="pin-card" onsubmit="loginCustomer(event)">
             <h2 id="customerLoginTitle" style="font-size:18px;color:var(--primary-dark);margin-bottom:8px;">Customer Login</h2>
@@ -660,7 +535,7 @@
     <div id="operatorLoginOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-labelledby="operatorLoginTitle">
         <form class="pin-card" onsubmit="loginLocalOperator(event)">
             <h2 id="operatorLoginTitle" style="font-size:18px;color:var(--primary-dark);margin-bottom:8px;">Admin / Staff Login</h2>
-            <p style="font-size:13px;color:#666;margin-bottom:14px;">Choose your account and enter its PIN. Your role controls access to the business control centre and transactions.</p>
+            <p id="operatorLoginMessage" style="font-size:13px;color:#666;margin-bottom:14px;">Choose your account and enter its PIN. Your role controls access to the business control centre and transactions.</p>
             <div class="form-group"><label for="operatorLoginSelect">Admin or staff account</label><select id="operatorLoginSelect" class="form-control" required></select></div>
             <div class="form-group"><label for="operatorLoginPin">PIN</label><input id="operatorLoginPin" class="form-control" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{4,12}" maxlength="12" required></div>
             <button class="btn-primary" type="submit">Login</button>
@@ -739,7 +614,7 @@
             <div class="flex-between" style="margin-bottom:15px;"><strong style="font-size:16px; color:#188038;" id="saleModalTitle">New Sale Bill</strong><span onclick="closeModal('modal-sale')" style="cursor:pointer; font-size:22px; color:#555;">✕</span></div>
             <input type="hidden" id="saleEditIndex" value="-1"><input type="hidden" id="linkedOrderData" value="{}">
             <div class="form-group"><label>Customer Name *</label><div style="display:flex; gap:6px;"><input type="text" id="saleCustomer" class="form-control" placeholder="Enter Customer Name" style="flex:1;" onblur="resetLinkedOrders()"><button class="btn-primary" style="margin:0; width:auto; padding:0 12px; background:#e8f0fe; color:var(--primary); border:1px solid var(--primary);" onclick="openLinkOrdersModal()">🔗 Link Orders</button></div></div>
-            <div class="form-card" style="background:#f7fbff;"><div class="grid-2"><div class="form-group" style="margin:0;"><label>Billing type</label><select id="saleCustomerType" class="form-control" onchange="toggleSaleCustomerTaxFields();calculateSaleTotal()"><option value="B2C">B2C · Retail customer</option><option value="B2B">B2B · Registered business</option></select></div><div class="form-group" id="saleGstinBox" style="margin:0;display:none;"><label>Customer GSTIN</label><input type="text" id="saleCustomerGstin" class="form-control" maxlength="15" placeholder="15-character GSTIN" style="text-transform:uppercase;"></div></div><div class="form-group" id="saleSupplyStateBox" style="margin:10px 0 0;display:none;"><label>Place of supply / State</label><input type="text" id="saleSupplyState" class="form-control" placeholder="Customer state"></div><div class="settings-row"><label for="saleLoyaltyEligible">इस bill पर customer loyalty points और eligible referral bonus दें</label><input type="checkbox" id="saleLoyaltyEligible" checked></div><small style="display:block;color:#777;margin-top:8px;">GST is calculated from Menu → Business Profile, Tax & GST settings. Confirm GST treatment with your accountant.</small></div>
+            <div class="form-card" style="background:#f7fbff;"><div class="grid-2"><div class="form-group" style="margin:0;"><label>Billing type</label><select id="saleCustomerType" class="form-control" onchange="toggleSaleCustomerTaxFields();calculateSaleTotal()"><option value="B2C">B2C · Retail customer</option><option value="B2B">B2B · Registered business</option></select></div><div class="form-group" id="saleGstinBox" style="margin:0;display:none;"><label>Customer GSTIN</label><input type="text" id="saleCustomerGstin" class="form-control" maxlength="15" placeholder="15-character GSTIN" style="text-transform:uppercase;"></div></div><div class="form-group" id="saleSupplyStateBox" style="margin:10px 0 0;display:none;"><label>Place of supply / State</label><input type="text" id="saleSupplyState" class="form-control" placeholder="Customer state"></div><small style="display:block;color:#777;margin-top:8px;">GST is calculated from Menu → Business Profile, Tax & GST settings. Confirm GST treatment with your accountant.</small></div>
             <div id="saleItemsContainer"></div><button class="btn-outline" onclick="addSaleItemRow()" style="margin-bottom:15px; border-style:dashed; color:#188038; border-color:#188038;">+ Add Sale Item</button>
 
             <div class="form-card" style="background:#fffcf0; border-color:#f2c94c;"><div class="flex-between"><strong class="title-sm" style="color:#b8860b; margin:0;">Old Metal Received (पुराना जमा)</strong><button class="btn-sm-edit" style="color:#b8860b; background:#fef5e5;" onclick="addSaleOldMetalRow()">+ Add Old</button></div><div id="saleOldMetalItemsContainer" style="margin-top:8px;"></div><div class="settings-row" style="font-size:11px;"><span>Create customer credit note for received old metal (linked to this bill)</span><input type="checkbox" id="saleCreateCreditNote" checked></div><div class="flex-between" style="margin-top:8px; border-top:1px solid #e0e0e0; padding-top:6px;"><span class="title-sm" style="margin:0;">Total Old Deductible:</span><strong class="text-gold" id="s_dispOldDeductible">₹0</strong></div></div>
@@ -855,12 +730,47 @@
         function loadModuleSettings() { const state=safeGet('jb_module_settings',{}); Object.entries(state).forEach(([id,enabled])=>{ const el=document.getElementById(id); if(el) el.checked=!!enabled; }); }
         const SECURITY_SETTINGS_KEY = 'jb_security_preferences';
         const PASSCODE_HASH_KEY = 'jb_passcode_hash';
-        async function hashPasscode(passcode) {
+        const PIN_HASH_ITERATIONS = 210000;
+        const LOGIN_LIMIT_PREFIX = 'jb_login_limit_';
+        function bytesToBase64(bytes) { let binary=''; bytes.forEach(byte=>binary+=String.fromCharCode(byte)); return btoa(binary); }
+        function base64ToBytes(value) { return Uint8Array.from(atob(value), character=>character.charCodeAt(0)); }
+        async function legacyPasscodeHash(passcode) {
             if(!window.crypto?.subtle) throw new Error('Secure cryptography is unavailable. Open this app over HTTPS or localhost to use a passcode.');
-            const bytes = new TextEncoder().encode(passcode);
-            const digest = await window.crypto.subtle.digest('SHA-256', bytes);
-            return [...new Uint8Array(digest)].map(byte => byte.toString(16).padStart(2, '0')).join('');
+            const digest=await window.crypto.subtle.digest('SHA-256',new TextEncoder().encode(passcode));
+            return [...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
         }
+        async function hashPasscode(passcode) {
+            if(!window.crypto?.subtle || !window.crypto?.getRandomValues) throw new Error('Secure cryptography is unavailable. Open this app over HTTPS or localhost to use a passcode.');
+            const salt=window.crypto.getRandomValues(new Uint8Array(16));
+            const key=await window.crypto.subtle.importKey('raw',new TextEncoder().encode(passcode),'PBKDF2',false,['deriveBits']);
+            const bits=await window.crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:PIN_HASH_ITERATIONS},key,256);
+            return `pbkdf2$${PIN_HASH_ITERATIONS}$${bytesToBase64(salt)}$${bytesToBase64(new Uint8Array(bits))}`;
+        }
+        async function verifyPasscode(passcode, storedHash) {
+            if(typeof storedHash!=='string' || !storedHash) return {valid:false};
+            if(!storedHash.startsWith('pbkdf2$')) {
+                return {valid:(await legacyPasscodeHash(passcode))===storedHash, legacy:true};
+            }
+            try {
+                const [,iterationText,saltText,hashText]=storedHash.split('$');
+                const iterations=Number(iterationText), salt=base64ToBytes(saltText), expected=base64ToBytes(hashText);
+                if(!Number.isInteger(iterations) || iterations<100000 || iterations>1000000 || salt.length<16 || expected.length!==32) return {valid:false};
+                const key=await window.crypto.subtle.importKey('raw',new TextEncoder().encode(passcode),'PBKDF2',false,['deriveBits']);
+                const actual=new Uint8Array(await window.crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations},key,256));
+                let difference=0; for(let i=0;i<actual.length;i++) difference|=actual[i]^expected[i];
+                return {valid:difference===0,legacy:false};
+            } catch(error) { return {valid:false}; }
+        }
+        function loginLockKey(scope, identity) { return LOGIN_LIMIT_PREFIX+scope+'_'+String(identity||'unknown').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,100); }
+        function loginLockRemaining(key) { const state=safeGet(key,{lockUntil:0}); return Math.max(0,(Number(state.lockUntil)||0)-Date.now()); }
+        function recordLoginFailure(key) {
+            const state=safeGet(key,{failures:0,lockUntil:0});
+            state.failures=(Number(state.failures)||0)+1;
+            if(state.failures>=5) { const level=Math.floor((state.failures-5)/3); state.lockUntil=Date.now()+Math.min(15*60*1000,30000*(2**level)); }
+            localStorage.setItem(key,JSON.stringify(state));
+        }
+        function clearLoginFailures(key) { localStorage.removeItem(key); }
+        function loginLockMessage(key) { return `Too many incorrect attempts. Try again in ${Math.ceil(loginLockRemaining(key)/1000)} seconds.`; } 
         async function saveSecurityPreferences() {
             if(!requirePermission('manageSettings','change security settings')) return;
             const enabled = !!document.getElementById('cfgPasscodeEnabled')?.checked;
@@ -894,16 +804,19 @@
         async function submitPinLock(event) {
             event.preventDefault();
             const input = document.getElementById('pinLockInput');
+            const lockKey=loginLockKey('app','passcode');
+            if(loginLockRemaining(lockKey)>0) { document.getElementById('pinLockMessage').innerText=loginLockMessage(lockKey); return; }
             try {
-                const enteredHash = await hashPasscode(input.value);
-                if(enteredHash !== localStorage.getItem(PASSCODE_HASH_KEY)) {
-                    input.value = '';
-                    document.getElementById('pinLockMessage').innerText = 'Incorrect passcode. Please try again.';
-                    input.focus();
-                    return;
+                const result=await verifyPasscode(input.value,localStorage.getItem(PASSCODE_HASH_KEY));
+                if(!result.valid) {
+                    recordLoginFailure(lockKey); input.value='';
+                    document.getElementById('pinLockMessage').innerText=loginLockRemaining(lockKey)>0?loginLockMessage(lockKey):'Incorrect passcode. Please try again.';
+                    input.focus(); return;
                 }
-                document.getElementById('pinLockOverlay').style.display = 'none';
-                document.getElementById('pinLockMessage').innerText = 'Enter your local passcode to continue.';
+                clearLoginFailures(lockKey);
+                if(result.legacy) localStorage.setItem(PASSCODE_HASH_KEY,await hashPasscode(input.value));
+                document.getElementById('pinLockOverlay').style.display='none';
+                document.getElementById('pinLockMessage').innerText='Enter your local passcode to continue.';
             } catch(error) {
                 document.getElementById('pinLockMessage').innerText = error.message;
             }
@@ -913,16 +826,39 @@
             if(settings.passcodeEnabled && localStorage.getItem(PASSCODE_HASH_KEY)) lockApplication();
         }
         if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-            navigator.serviceWorker.addEventListener('controllerchange', () => location.reload(), { once:true });
-            window.addEventListener('load', async () => {
-                try {
-                    const registration = await navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' });
-                    registration.update().catch(() => {});
-                } catch(error) {
-                    console.warn('Service worker registration failed:', error);
-                }
-            });
+            window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(error => console.warn('Service worker registration failed:', error)));
         }
+        let operatorSessionTimer=null, customerSessionTimer=null;
+        const SESSION_IDLE_MS=5*60*1000;
+        function startOperatorSessionTimer() {
+            clearTimeout(operatorSessionTimer); clearTimeout(customerSessionTimer);
+            operatorSessionTimer=setTimeout(()=>lockOperatorSession(),SESSION_IDLE_MS);
+        }
+        function startCustomerSessionTimer() {
+            clearTimeout(customerSessionTimer); clearTimeout(operatorSessionTimer);
+            customerSessionTimer=setTimeout(()=>lockCustomerSession(),SESSION_IDLE_MS);
+        }
+        function lockOperatorSession() {
+            if(!currentOperator()) return;
+            const previousId=activeOperatorId; activeOperatorId=null; clearTimeout(operatorSessionTimer);
+            applyCurrentPermissions(); renderOperatorLoginOptions();
+            const select=document.getElementById('operatorLoginSelect'); if(select && localUsers().some(user=>user.id===previousId&&user.pinHash)) select.value=previousId;
+            document.getElementById('operatorLoginOverlay').style.display='flex';
+        }
+        function lockCustomerSession() {
+            if(!activeCustomerAccount) return;
+            activeCustomerAccount=null; clearTimeout(customerSessionTimer);
+            document.getElementById('customerPortal').style.display='none';
+            setVal('customerLoginPhone',''); setVal('customerLoginPin','');
+            document.getElementById('customerLoginOverlay').style.display='flex';
+        }
+        ['pointerdown','keydown','touchstart','wheel'].forEach(type=>document.addEventListener(type,()=>{
+            if(currentOperator()) startOperatorSessionTimer();
+            else if(activeCustomerAccount) startCustomerSessionTimer();
+        },{passive:true}));
+        document.addEventListener('visibilitychange',()=>{
+            if(document.hidden) { if(currentOperator()) lockOperatorSession(); else if(activeCustomerAccount) lockCustomerSession(); }
+        });
         window.addEventListener('beforeunload', event => { if(appPreferences().unsavedWarning && [...document.querySelectorAll('.modal-overlay')].some(modal=>modal.style.display==='flex')) { event.preventDefault(); event.returnValue=''; } });
 
         function saveBusinessSettings() {
@@ -938,8 +874,7 @@
                 shareAmount:!!document.getElementById('cfgShareAmount')?.checked, sharePayments:!!document.getElementById('cfgSharePayments')?.checked,
                 shareTax:!!document.getElementById('cfgShareTax')?.checked, sharePartyDate:!!document.getElementById('cfgSharePartyDate')?.checked,
                 reminderDays:textVal('cfgReminderDays') || '0', smsFooter:textVal('cfgSmsFooter'),
-                itemTracking:!!document.getElementById('cfgItemTracking')?.checked, barcodeMode:textVal('cfgBarcodeMode') || 'off',
-                loyalty:safeGet(SETTINGS_KEY,{}).loyalty || {rupeesPerPoint:100,minBillAmount:0,referralPoints:100,minWithdrawal:100,timing:'approved'}
+                itemTracking:!!document.getElementById('cfgItemTracking')?.checked, barcodeMode:textVal('cfgBarcodeMode') || 'off'
             };
             localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); showToast('Settings saved.');
         }
@@ -956,119 +891,12 @@
             Object.entries(shareCheckboxKeys).forEach(([id,key]) => { const el=document.getElementById(id); if(el) el.checked=s[key] === undefined ? true : !!s[key]; });
             renderLocalUsers();
             renderCustomerAccounts();
-            loadLoyaltySettings();
             updateGoldRatePreviews();
         }
         const CUSTOMER_ACCOUNTS_KEY = 'jb_customer_accounts';
         const CUSTOMER_CHAT_KEY = 'jb_customer_chat';
-        const LOYALTY_DATA_KEY = 'jb_loyalty_data';
         let activeCustomerAccount = null;
-        function referralCodeFor(accounts) {
-            let code;
-            do { code = `JB${Math.random().toString(36).slice(2,8).toUpperCase()}`; }
-            while(accounts.some(account => String(account.referralCode||'').toUpperCase() === code));
-            return code;
-        }
-        function customerAccounts() {
-            const accounts = safeGet(CUSTOMER_ACCOUNTS_KEY, []);
-            if(!Array.isArray(accounts)) return [];
-            let migrated = false;
-            accounts.forEach(account => { if(account && !account.referralCode) { account.referralCode=referralCodeFor(accounts); migrated=true; } });
-            if(migrated) { try { localStorage.setItem(CUSTOMER_ACCOUNTS_KEY, JSON.stringify(accounts)); } catch(error) {} }
-            return accounts;
-        }
-        function loyaltySettings() {
-            const config=safeGet(SETTINGS_KEY,{}).loyalty||{};
-            return { enabled:config.enabled!==false, referralEnabled:config.referralEnabled!==false, rupeesPerPoint:Math.max(1,Number(config.rupeesPerPoint)||100), minBillAmount:Math.max(0,Number(config.minBillAmount)||0), referralPoints:Math.max(0,Number(config.referralPoints??100)||0), minWithdrawal:Math.max(1,Number(config.minWithdrawal)||100), timing:config.timing==='paid'?'paid':'approved' };
-        }
-        function loyaltyData() {
-            const data=safeGet(LOYALTY_DATA_KEY,{ledger:[],withdrawals:[]});
-            return { ledger:Array.isArray(data.ledger)?data.ledger:[], withdrawals:Array.isArray(data.withdrawals)?data.withdrawals:[] };
-        }
-        function saveLoyaltyData(data) {
-            try { localStorage.setItem(LOYALTY_DATA_KEY,JSON.stringify(data)); return true; }
-            catch(error) { alert('Could not save loyalty data. Browser storage may be full.'); return false; }
-        }
-        function loyaltyBalance(accountId) { return loyaltyData().ledger.filter(row=>row.accountId===accountId).reduce((sum,row)=>sum+(Number(row.points)||0),0); }
-        function loyaltyReserved(accountId) { return loyaltyData().withdrawals.filter(row=>row.accountId===accountId&&['pending','approved'].includes(row.status)).reduce((sum,row)=>sum+(Number(row.points)||0),0); }
-        function saveLoyaltySettings() {
-            if(!requirePermission('manageSettings','change loyalty settings')) return;
-            const rupeesPerPoint=val('cfgLoyaltyRate'), minBillAmount=val('cfgLoyaltyMinBill'), referralPoints=val('cfgReferralPoints'), minWithdrawal=val('cfgLoyaltyMinWithdrawal');
-            if(rupeesPerPoint<1||minBillAmount<0||referralPoints<0||minWithdrawal<1) return alert('Enter valid non-negative loyalty settings; spend rate and minimum withdrawal must be positive.');
-            const settings=safeGet(SETTINGS_KEY,{}); settings.loyalty={enabled:!!document.getElementById('cfgLoyaltyEnabled')?.checked,referralEnabled:!!document.getElementById('cfgReferralEnabled')?.checked,rupeesPerPoint,minBillAmount,referralPoints,minWithdrawal,timing:textVal('cfgLoyaltyTiming')==='paid'?'paid':'approved'};
-            localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings)); renderLoyaltyAdmin(); showToast('Loyalty settings saved.');
-        }
-        function loadLoyaltySettings() {
-            const c=loyaltySettings(); setVal('cfgLoyaltyRate',c.rupeesPerPoint); setVal('cfgLoyaltyMinBill',c.minBillAmount); setVal('cfgReferralPoints',c.referralPoints); setVal('cfgLoyaltyMinWithdrawal',c.minWithdrawal); setVal('cfgLoyaltyTiming',c.timing);
-            const enabled=document.getElementById('cfgLoyaltyEnabled'); if(enabled) enabled.checked=c.enabled;
-            const referralEnabled=document.getElementById('cfgReferralEnabled'); if(referralEnabled) referralEnabled.checked=c.referralEnabled;
-            renderLoyaltyAdmin();
-        }
-        function recordLoyaltyForApprovedSale(sale) {
-            if(!sale?.loyaltyApproved || !sale.loyaltyId || sale.customerType==='B2B' || sale.loyaltyEligible===false) return;
-            const config=loyaltySettings(), total=Number(sale.total)||0, pending=Number(sale.payments?.pending)||0;
-            const eligible=total>=config.minBillAmount && (config.timing!=='paid'||pending<=0);
-            if(!eligible || (!config.enabled && !config.referralEnabled)) return;
-            const account=customerAccounts().find(item=>normalizeParty(item.name)===normalizeParty(sale.customer));
-            if(!account) return;
-            const data=loyaltyData(), now=new Date().toISOString();
-            const hasRef=(type,refId)=>data.ledger.some(row=>row.type===type&&row.refId===refId);
-            const purchaseRef=`sale:${sale.loyaltyId}`;
-            if(config.enabled && !hasRef('purchase-credit',purchaseRef)) {
-                const points=Math.floor(total/config.rupeesPerPoint);
-                if(points>0) data.ledger.push({id:`loyalty_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,accountId:account.id,type:'purchase-credit',points,refId:purchaseRef,billId:sale.loyaltyId,amount:total,date:now,note:`Approved sale bill · ₹${total.toLocaleString('en-IN')}`});
-            }
-            const referralRef=`referral:${account.id}`;
-            if(config.referralEnabled && account.referredByCode && config.referralPoints>0 && !hasRef('referral-credit',referralRef)) {
-                const priorBill=saleLogs.some(other=>other!==sale&&normalizeParty(other.customer)===normalizeParty(account.name)&&other.loyaltyApproved&&other.customerType!=='B2B'&&other.loyaltyEligible!==false&&(Number(other.total)||0)>=config.minBillAmount&&(config.timing!=='paid'||(Number(other.payments?.pending)||0)<=0));
-                const referrer=customerAccounts().find(item=>String(item.referralCode||'').toUpperCase()===String(account.referredByCode).toUpperCase());
-                const notSelf=referrer&&referrer.id!==account.id&&normalizeMobile(referrer.phone)!==normalizeMobile(account.phone)&&normalizeParty(referrer.name)!==normalizeParty(account.name);
-                if(!priorBill&&notSelf) data.ledger.push({id:`loyalty_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,accountId:referrer.id,type:'referral-credit',points:config.referralPoints,refId:referralRef,referredAccountId:account.id,billId:sale.loyaltyId,date:now,note:`Referral bonus · ${account.name}'s first eligible approved bill`});
-            }
-            if(data.ledger.length!==loyaltyData().ledger.length) { if(saveLoyaltyData(data)) renderLoyaltyAdmin(); }
-        }
-        function requestLoyaltyWithdrawal() {
-            if(!activeCustomerAccount) return;
-            const amount=val('loyaltyWithdrawAmount'), method=textVal('loyaltyWithdrawMethod'), details=textVal('loyaltyWithdrawDetails'), config=loyaltySettings();
-            if(!Number.isInteger(amount)||amount<config.minWithdrawal) return alert(`Minimum withdrawal is ₹${config.minWithdrawal}. Enter a whole-number amount.`);
-            if((method==='upi'||method==='bank')&&!details) return alert('Enter UPI or bank payout details.');
-            if(amount>loyaltyBalance(activeCustomerAccount.id)-loyaltyReserved(activeCustomerAccount.id)) return alert('Requested amount exceeds your available wallet balance.');
-            const data=loyaltyData(); data.withdrawals.unshift({id:`wd_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,accountId:activeCustomerAccount.id,customer:activeCustomerAccount.name,points:amount,method,details,date:new Date().toISOString(),status:'pending'});
-            if(saveLoyaltyData(data)) { setVal('loyaltyWithdrawAmount',''); setVal('loyaltyWithdrawDetails',''); renderCustomerLoyaltyWallet(); renderLoyaltyAdmin(); showToast('Withdrawal request submitted.'); }
-        }
-        function renderCustomerLoyaltyWallet() {
-            if(!activeCustomerAccount) return;
-            const accountId=activeCustomerAccount.id, data=loyaltyData(), config=loyaltySettings(), balance=loyaltyBalance(accountId), reserved=loyaltyReserved(accountId), available=balance-reserved;
-            const ownLedger=data.ledger.filter(row=>row.accountId===accountId).sort((a,b)=>new Date(b.date)-new Date(a.date));
-            const ownRequests=data.withdrawals.filter(row=>row.accountId===accountId);
-            const referralRows=ownLedger.filter(row=>row.type==='referral-credit');
-            const history=ownLedger.map(row=>`<div class="settings-row"><span>${escapeHtml(row.note||row.type)}<br><small>${safeDateStr(row.date)}</small></span><b style="color:${row.points>=0?'var(--success)':'var(--danger)'};">${row.points>0?'+':''}${Number(row.points).toLocaleString('en-IN')} pts</b></div>`).join('');
-            const requests=ownRequests.map(row=>`<div class="settings-row"><span>₹${Number(row.points).toLocaleString('en-IN')} · ${escapeHtml(row.method.toUpperCase())}<br><small>${safeDateStr(row.date)} · ${escapeHtml(row.details||'')}</small></span><span class="stock-tag ${row.status==='paid'?'stock-good':row.status==='rejected'?'stock-alert':'stock-warn'}">${escapeHtml(row.status)}</span></div>`).join('');
-            setHtml('customerLoyaltyWallet',`<div class="card" style="cursor:default;border-left:4px solid var(--gold);"><div class="flex-between"><strong>Loyalty Wallet & Referrals</strong><span class="stock-tag stock-good">${balance.toLocaleString('en-IN')} points</span></div><div class="grid-3" style="margin-top:10px;text-align:center;"><div>Available<br><b>${available.toLocaleString('en-IN')} pts · ₹${available.toLocaleString('en-IN')}</b></div><div>Reserved<br><b>${reserved.toLocaleString('en-IN')} pts</b></div><div>Referral code<br><b>${escapeHtml(accountReferralCode(accountId))}</b></div></div><small style="display:block;color:#777;margin-top:8px;">Earn 1 point per ₹${config.rupeesPerPoint} eligible purchase; 1 point = ₹1. Minimum withdrawal ₹${config.minWithdrawal}. Referral bonuses: ${referralRows.length} credited.</small><div class="divider"></div><strong>Request withdrawal</strong><div class="grid-2" style="margin-top:8px;"><div class="form-group"><label>Amount (₹ / points)</label><input id="loyaltyWithdrawAmount" type="number" min="${config.minWithdrawal}" step="1" class="form-control" placeholder="Minimum ₹${config.minWithdrawal}"></div><div class="form-group"><label>Payout method</label><select id="loyaltyWithdrawMethod" class="form-control"><option value="upi">UPI</option><option value="bank">Bank transfer</option><option value="cash">Cash pickup</option></select></div></div><div class="form-group"><label>UPI ID / bank details / cash note</label><input id="loyaltyWithdrawDetails" class="form-control" placeholder="Payout details (not needed for cash)"></div><button class="btn-primary" style="margin-top:0;" onclick="requestLoyaltyWithdrawal()">Submit Withdrawal Request</button><div class="divider"></div><strong>Referral history & wallet ledger</strong>${history||'<small style="display:block;color:#777;margin-top:8px;">No loyalty activity yet.</small>'}<div class="divider"></div><strong>Withdrawal history</strong>${requests||'<small style="display:block;color:#777;margin-top:8px;">No withdrawal requests.</small>'}</div>`);
-        }
-        function accountReferralCode(accountId) { return customerAccounts().find(account=>account.id===accountId)?.referralCode||'—'; }
-        function renderLoyaltyAdmin() {
-            const report=document.getElementById('loyaltyAdminReport'); if(!report) return;
-            if(!hasPermission('manageUsers')) { report.innerHTML='<small style="color:#777;">Admin access required to view loyalty ledgers and withdrawal requests.</small>'; setHtml('loyaltyAdminLedger',''); setHtml('loyaltyAdminWithdrawals',''); return; }
-            const data=loyaltyData(), config=loyaltySettings();
-            const earned=data.ledger.filter(row=>row.points>0).reduce((sum,row)=>sum+Number(row.points),0), redeemed=Math.abs(data.ledger.filter(row=>row.points<0).reduce((sum,row)=>sum+Number(row.points),0));
-            const states=['pending','approved','rejected','paid'];
-            setHtml('loyaltyAdminReport',`<div class="grid-2" style="margin:8px 0;"><div>Points credited<br><b>${earned.toLocaleString('en-IN')}</b></div><div>Points paid out<br><b>${redeemed.toLocaleString('en-IN')}</b></div>${states.map(status=>`<div>${status[0].toUpperCase()+status.slice(1)} requests<br><b>${data.withdrawals.filter(row=>row.status===status).length}</b></div>`).join('')}<div>Minimum withdrawal<br><b>₹${config.minWithdrawal}</b></div></div>`);
-            const accounts=customerAccounts();
-            setHtml('loyaltyAdminLedger',`<strong>Customer ledger</strong>${data.ledger.length?data.ledger.slice().sort((a,b)=>new Date(b.date)-new Date(a.date)).map(row=>{const account=accounts.find(item=>item.id===row.accountId);return `<div class="settings-row"><span><b>${escapeHtml(account?.name||'Removed account')}</b> · ${escapeHtml(row.note||row.type)}<br><small>${safeDateStr(row.date)} · ${escapeHtml(row.refId||'')}</small></span><b>${row.points>0?'+':''}${Number(row.points).toLocaleString('en-IN')} pts</b></div>`;}).join(''):'<small style="display:block;color:#777;margin-top:6px;">No loyalty credits or debits yet.</small>'}`);
-            setHtml('loyaltyAdminWithdrawals',`<strong>Withdrawal requests</strong>${data.withdrawals.length?data.withdrawals.map(row=>`<div class="form-card"><div class="flex-between"><b>${escapeHtml(row.customer)} · ₹${Number(row.points).toLocaleString('en-IN')}</b><span class="stock-tag ${row.status==='paid'?'stock-good':row.status==='rejected'?'stock-alert':'stock-warn'}">${escapeHtml(row.status)}</span></div><div style="font-size:12px;color:#555;margin:6px 0;">${safeDateStr(row.date)} · ${escapeHtml(row.method.toUpperCase())} · ${escapeHtml(row.details||'No payout details')}</div>${row.status==='pending'?`<div class="grid-2"><button class="btn-sm-edit" onclick="transitionLoyaltyWithdrawal('${escapeHtml(row.id)}','approved')">Approve</button><button class="btn-sm-edit" style="color:var(--danger);" onclick="transitionLoyaltyWithdrawal('${escapeHtml(row.id)}','rejected')">Reject</button></div>`:''}${row.status==='approved'?`<button class="btn-sm-edit" onclick="transitionLoyaltyWithdrawal('${escapeHtml(row.id)}','paid')">Mark Paid</button>`:''}${row.status==='rejected'&&row.note?`<small>${escapeHtml(row.note)}</small>`:''}</div>`).join(''):'<small style="display:block;color:#777;margin-top:6px;">No withdrawal requests.</small>'}`);
-        }
-        function transitionLoyaltyWithdrawal(id,nextStatus) {
-            if(!requirePermission('manageUsers','manage loyalty withdrawals')) return;
-            const data=loyaltyData(), row=data.withdrawals.find(item=>item.id===id); if(!row) return;
-            if(nextStatus==='approved'&&row.status!=='pending') return;
-            if(nextStatus==='rejected'&&row.status!=='pending') return;
-            if(nextStatus==='paid'&&row.status!=='approved') return;
-            if(nextStatus==='rejected') { const note=prompt('Optional rejection reason:')||''; row.note=note; }
-            row.status=nextStatus; row.updatedAt=new Date().toISOString();
-            if(nextStatus==='paid'&&!data.ledger.some(entry=>entry.refId===`withdrawal:${row.id}`)) data.ledger.push({id:`loyalty_${Date.now()}`,accountId:row.accountId,type:'withdrawal-debit',points:-Number(row.points),refId:`withdrawal:${row.id}`,date:row.updatedAt,note:`Withdrawal paid · ${row.method.toUpperCase()}`});
-            if(saveLoyaltyData(data)) { renderLoyaltyAdmin(); if(activeCustomerAccount?.id===row.accountId) renderCustomerLoyaltyWallet(); showToast(`Withdrawal ${nextStatus}.`); }
-        }
+        function customerAccounts() { return safeGet(CUSTOMER_ACCOUNTS_KEY, []); }
         function customerChatMessages() { return safeGet(CUSTOMER_CHAT_KEY, []); }
         function saveChatMessage(message) {
             const messages = customerChatMessages();
@@ -1170,10 +998,10 @@
         }
         function normalizeMobile(value) { return String(value || '').replace(/\D/g, ''); }
         function normalizeParty(value) { return String(value || '').trim().toLocaleLowerCase().replace(/\s+/g, ' '); }
-        function resetCustomerAccountForm() { setVal('customerEditIndex', -1); setVal('customerAccountName', ''); setVal('customerAccountPhone', ''); setVal('customerAccountReferralCode',''); document.getElementById('customerAccountReferralCode').disabled=false; setVal('customerAccountPin', ''); document.getElementById('customerAccountPin').placeholder = 'Required for new account'; }
+        function resetCustomerAccountForm() { setVal('customerEditIndex', -1); setVal('customerAccountName', ''); setVal('customerAccountPhone', ''); setVal('customerAccountPin', ''); document.getElementById('customerAccountPin').placeholder = 'Required for new account'; }
         async function saveCustomerAccount() {
             if(!requirePermission('manageUsers','manage customer logins')) return;
-            const name=textVal('customerAccountName'), phone=normalizeMobile(textVal('customerAccountPhone')), pin=textVal('customerAccountPin'), referralCode=textVal('customerAccountReferralCode').toUpperCase();
+            const name=textVal('customerAccountName'), phone=normalizeMobile(textVal('customerAccountPhone')), pin=textVal('customerAccountPin');
             const index=Number(document.getElementById('customerEditIndex').value), accounts=customerAccounts(), editing=Number.isInteger(index)&&index>=0&&index<accounts.length;
             if(!name) return alert('Enter the customer / party name.');
             if(phone.length<8||phone.length>15) return alert('Enter a valid mobile number with 8 to 15 digits.');
@@ -1181,21 +1009,15 @@
             if(editing&&pin&&!/^\d{4,12}$/.test(pin)) return alert('PIN must contain 4 to 12 digits.');
             if(accounts.some((account,i)=>normalizeMobile(account.phone)===phone&&(!editing||i!==index))) return alert('A customer account already uses this mobile number.');
             if(accounts.some((account,i)=>normalizeParty(account.name)===normalizeParty(name)&&(!editing||i!==index))) return alert('A customer account already exists for this party name.');
-            let referrer=null;
-            if(!editing&&referralCode) {
-                referrer=accounts.find(account=>String(account.referralCode||'').toUpperCase()===referralCode);
-                if(!referrer) return alert('Referral code was not found.');
-                if(normalizeMobile(referrer.phone)===phone||normalizeParty(referrer.name)===normalizeParty(name)) return alert('Self-referrals are not allowed.');
-            }
-            const account={...(editing?accounts[index]:{}), id:editing?accounts[index].id:`customer_${Date.now()}_${Math.random().toString(36).slice(2,8)}`, name, phone, referralCode:editing?accounts[index].referralCode:referralCodeFor(accounts), referredByCode:editing?accounts[index].referredByCode:(referrer?.referralCode||'')};
+            const account={...(editing?accounts[index]:{}), id:editing?accounts[index].id:`customer_${Date.now()}_${Math.random().toString(36).slice(2,8)}`, name, phone};
             if(pin) { try { account.pinHash=await hashPasscode(pin); } catch(error) { return alert(error.message); } }
             if(editing) accounts[index]=account; else accounts.push(account);
-            localStorage.setItem(CUSTOMER_ACCOUNTS_KEY,JSON.stringify(accounts)); resetCustomerAccountForm(); renderCustomerAccounts(); showToast(editing?'Customer account updated.':`Customer account created. Referral code: ${account.referralCode}`);
+            localStorage.setItem(CUSTOMER_ACCOUNTS_KEY,JSON.stringify(accounts)); resetCustomerAccountForm(); renderCustomerAccounts(); showToast(editing?'Customer account updated.':'Customer account created.');
         }
         function editCustomerAccount(index) {
             if(!requirePermission('manageUsers','edit customer login')) return;
             const account=customerAccounts()[index]; if(!account) return;
-            setVal('customerEditIndex',index); setVal('customerAccountName',account.name); setVal('customerAccountPhone',account.phone); setVal('customerAccountReferralCode',account.referredByCode||''); document.getElementById('customerAccountReferralCode').disabled=true; setVal('customerAccountPin',''); document.getElementById('customerAccountPin').placeholder='Leave blank to keep current PIN';
+            setVal('customerEditIndex',index); setVal('customerAccountName',account.name); setVal('customerAccountPhone',account.phone); setVal('customerAccountPin',''); document.getElementById('customerAccountPin').placeholder='Leave blank to keep current PIN';
         }
         function removeCustomerAccount(index) {
             if(!requirePermission('manageUsers','remove customer login')) return;
@@ -1205,8 +1027,8 @@
         }
         function renderCustomerAccounts() {
             const accounts=customerAccounts();
-            setHtml('customerAccountsList',accounts.length?accounts.map((account,index)=>`<div class="settings-row"><span><b>${escapeHtml(account.name)}</b><br><small>${escapeHtml(account.phone)} · Referral: ${escapeHtml(account.referralCode)}${account.referredByCode?` · Referred by ${escapeHtml(account.referredByCode)}`:''}</small></span><span style="display:flex;gap:6px;"><button class="btn-sm-edit" onclick="editCustomerAccount(${index})">Edit</button><button class="btn-sm-edit" style="color:var(--danger);" onclick="removeCustomerAccount(${index})">Remove</button></span></div>`).join(''):'<small style="color:#777;">No customer accounts created.</small>');
-            renderAdminChatOptions(); renderLoyaltyAdmin();
+            setHtml('customerAccountsList',accounts.length?accounts.map((account,index)=>`<div class="settings-row"><span><b>${escapeHtml(account.name)}</b><br><small>${escapeHtml(account.phone)}</small></span><span style="display:flex;gap:6px;"><button class="btn-sm-edit" onclick="editCustomerAccount(${index})">Edit</button><button class="btn-sm-edit" style="color:var(--danger);" onclick="removeCustomerAccount(${index})">Remove</button></span></div>`).join(''):'<small style="color:#777;">No customer accounts created.</small>');
+            renderAdminChatOptions();
         }
         function openCustomerLogin() {
             if(!customerAccounts().length) return showToast('Ask the business admin to create your customer login.');
@@ -1217,16 +1039,21 @@
             event.preventDefault();
             const phone=normalizeMobile(textVal('customerLoginPhone')), pin=textVal('customerLoginPin');
             const account=customerAccounts().find(item=>normalizeMobile(item.phone)===phone);
+            const lockKey=loginLockKey('customer',phone);
+            if(loginLockRemaining(lockKey)>0) return alert(loginLockMessage(lockKey));
             try {
-                if(!account||!account.pinHash||await hashPasscode(pin)!==account.pinHash) { setVal('customerLoginPin',''); return alert('Mobile number or PIN is incorrect.'); }
-                            activeCustomerAccount=account; closeCustomerLogin();
-            document.querySelectorAll('.header,.tab-section,.bottom-nav,.fab').forEach(element=>element.style.display='none');
-            document.getElementById('customerPortal').style.display='block';
-            renderCustomerPortal(); window.scrollTo(0,0);
+                const result=account?.pinHash?await verifyPasscode(pin,account.pinHash):{valid:false};
+                if(!result.valid) { recordLoginFailure(lockKey); setVal('customerLoginPin',''); return alert(loginLockRemaining(lockKey)>0?loginLockMessage(lockKey):'Mobile number or PIN is incorrect.'); }
+                clearLoginFailures(lockKey);
+                if(result.legacy) { account.pinHash=await hashPasscode(pin); localStorage.setItem(CUSTOMER_ACCOUNTS_KEY,JSON.stringify(customerAccounts())); }
+                activeCustomerAccount=account; closeCustomerLogin(); startCustomerSessionTimer();
+                document.querySelectorAll('.header,.tab-section,.bottom-nav,.fab').forEach(element=>element.style.display='none');
+                document.getElementById('customerPortal').style.display='block';
+                renderCustomerPortal(); window.scrollTo(0,0);
             } catch(error) { alert(error.message); }
         }
         function logoutCustomerPortal() {
-            activeCustomerAccount=null; document.getElementById('customerPortal').style.display='none';
+            activeCustomerAccount=null; clearTimeout(customerSessionTimer); document.getElementById('customerPortal').style.display='none';
             document.querySelectorAll('.header,.bottom-nav').forEach(element=>element.style.display='');
             document.querySelectorAll('.tab-section').forEach(element=>element.style.display='');
             document.querySelectorAll('.fab').forEach(element=>element.style.display='');
@@ -1249,7 +1076,6 @@
         function renderCustomerPortal() {
             if(!activeCustomerAccount) return;
             setHtml('customerPortalName',`Welcome, ${escapeHtml(activeCustomerAccount.name)} · ${escapeHtml(activeCustomerAccount.phone)}`);
-            renderCustomerLoyaltyWallet();
             renderChatThread('customerChatThread', activeCustomerAccount.id, false);
             const all=customerTransactions(activeCustomerAccount), filter=textVal('customerPortalFilter')||'ALL';
             const counts={sales:all.filter(row=>row.category==='SALE').length,purchases:all.filter(row=>row.category==='PURCHASE').length,plans:all.filter(row=>['EMI','KITTY'].includes(row.category)).length};
@@ -1272,7 +1098,7 @@
             const users = localUsers();
             if(!users.length) return true;
             const user = currentOperator();
-            if(!user) return users.some(account=>!account.pinHash); // Allow existing no-PIN records to be secured before login is enforced.
+            if(!user || !user.pinHash) return false;
             if(user.role === 'Admin' || user.role === 'Owner') return true;
             return !!user.permissions?.[permission];
         }
@@ -1311,7 +1137,10 @@
         }
         function renderOperatorLoginOptions() {
             const select=document.getElementById('operatorLoginSelect'); if(!select) return;
-            select.innerHTML=localUsers().filter(u=>u.pinHash).map(u=>`<option value="${escapeHtml(u.id)}">${escapeHtml(u.name)} · ${escapeHtml(u.role)}</option>`).join('');
+            const users=localUsers().filter(user=>user.pinHash);
+            select.innerHTML=users.length?users.map(user=>`<option value="${escapeHtml(user.id)}">${escapeHtml(user.name)} · ${escapeHtml(user.role)}</option>`).join(''):'<option value="" selected>No account has a PIN</option>';
+            const message=document.getElementById('operatorLoginMessage'); if(message) message.innerText=users.length?'Choose your account and enter its PIN.':'No staff account has a PIN yet. Access is blocked; an account with a valid PIN is required.';
+            const submit=document.querySelector('#operatorLoginOverlay button[type="submit"]'); if(submit) submit.disabled=!users.length;
         }
         function resetLocalUserForm() { setVal('cfgUserEditIndex',-1); setVal('cfgUserName',''); setVal('cfgUserPhone',''); setVal('cfgUserPin',''); setVal('cfgUserRole','Manager'); renderPermissionEditor(); }
         function editLocalUser(index) {
@@ -1350,21 +1179,30 @@
             renderLocalUsers(); if(users.length && !activeOperatorId) openOperatorLogin();
         }
         function openOperatorLogin() {
-            if(!localUsers().length || !localUsers().some(user=>user.pinHash)) return showToast('Set staff PINs in Users & Permissions before using account login.');
+            if(!localUsers().length) return showToast('Create the first Owner account in Users & Permissions before using account login.');
             renderOperatorLoginOptions(); setVal('operatorLoginPin',''); document.getElementById('operatorLoginOverlay').style.display='flex'; setTimeout(()=>document.getElementById('operatorLoginSelect')?.focus(),0);
         }
         async function loginLocalOperator(event) {
-            event.preventDefault(); const user=localUsers().find(u=>u.id===textVal('operatorLoginSelect'));
-            if(!user || !user.pinHash) { setHtml('operatorLoginTitle','Account PIN is not set'); return; }
+            event.preventDefault(); const user=localUsers().find(account=>account.id===textVal('operatorLoginSelect'));
+            if(!user || !user.pinHash) return;
+            const lockKey=loginLockKey('staff',user.id);
+            if(loginLockRemaining(lockKey)>0) return alert(loginLockMessage(lockKey));
             try {
-                if(await hashPasscode(textVal('operatorLoginPin'))!==user.pinHash) { setVal('operatorLoginPin',''); return alert('Incorrect staff PIN.'); }
-                activeOperatorId=user.id; document.getElementById('operatorLoginOverlay').style.display='none'; renderLocalUsers(); applyCurrentPermissions();
+                const pin=textVal('operatorLoginPin'), result=await verifyPasscode(pin,user.pinHash);
+                if(!result.valid) { recordLoginFailure(lockKey); setVal('operatorLoginPin',''); return alert(loginLockRemaining(lockKey)>0?loginLockMessage(lockKey):'Incorrect staff PIN.'); }
+                clearLoginFailures(lockKey);
+                if(result.legacy) { user.pinHash=await hashPasscode(pin); localStorage.setItem('jb_local_users',JSON.stringify(localUsers())); }
+                activeOperatorId=user.id; document.getElementById('operatorLoginOverlay').style.display='none'; startOperatorSessionTimer(); renderLocalUsers(); applyCurrentPermissions();
                 showToast(`Logged in as ${user.name}.`);
             } catch(error) { alert(error.message); }
         }
         function applyCurrentPermissions() {
             const active=currentOperator();
-            // Keep every destination visible; switchTab still enforces access when a destination is opened.
+            document.querySelectorAll('.b-nav-item').forEach((button,index)=>{
+                const permissions=['viewSales','viewStock','viewHistory','manageKarigar','viewLedgers','viewReports','manageBusiness','manageSettings'];
+                const allowed=!localUsers().length || hasPermission(permissions[index]) || (index===7&&hasPermission('manageUsers'));
+                button.style.display=allowed?'':'none';
+            });
             const actionPermissions={
                 openSaleModal:'createSales',openOrderModal:'createSales',openPurchaseModal:'createPurchases',openPurOrderModal:'createPurchases',
                 executeSaleSave:'createSales',executeOrderSave:'createSales',executePurchaseSave:'createPurchases',executePurchaseOrderSave:'createPurchases',
@@ -1390,192 +1228,32 @@
                 group.style.display=hasPermission(permission)?'':'none';
             });
             const activeTab=document.querySelector('.tab-section.active')?.id;
-            const tabPermissions={'tab-home':'viewSales','tab-stock':'viewStock','tab-history':'viewHistory','tab-karigar':'manageKarigar','tab-ledgers':'viewLedgers','tab-reports':'viewReports','tab-business':'manageBusiness','tab-booking-pl':'viewReports','tab-menu':'manageSettings'};
+            const tabPermissions={'tab-home':'viewSales','tab-stock':'viewStock','tab-history':'viewHistory','tab-karigar':'manageKarigar','tab-ledgers':'viewLedgers','tab-reports':'viewReports','tab-business':'manageBusiness','tab-menu':'manageSettings'};
             const canOpenTab=id=>id==='tab-menu'?(hasPermission('manageSettings')||hasPermission('manageUsers')):hasPermission(tabPermissions[id]);
             if(activeTab && !canOpenTab(activeTab)) {
-                const first=['tab-home','tab-stock','tab-history','tab-karigar','tab-ledgers','tab-reports','tab-business','tab-booking-pl','tab-menu'].find(canOpenTab);
-                if(first) switchTab(first,document.querySelectorAll('.b-nav-item')[['tab-home','tab-stock','tab-history','tab-karigar','tab-ledgers','tab-reports','tab-business','tab-booking-pl','tab-menu'].indexOf(first)]);
+                const first=['tab-home','tab-stock','tab-history','tab-karigar','tab-ledgers','tab-reports','tab-business','tab-menu'].find(canOpenTab);
+                if(first) switchTab(first,document.querySelectorAll('.b-nav-item')[['tab-home','tab-stock','tab-history','tab-karigar','tab-ledgers','tab-reports','tab-business','tab-menu'].indexOf(first)]);
             }
         }
         renderPermissionEditor();
-        const BACKUP_INTERNAL_KEYS = new Set(['jb_backup_imported_fingerprints','jb_backup_last_created','jb_backup_last_reminder']);
-        let pendingBackupRestore = null;
-        function backupStorageSnapshot() {
-            const storage={};
-            for(let i=0;i<localStorage.length;i++) {
-                const key=localStorage.key(i);
-                if(key && key.startsWith('jb_') && !BACKUP_INTERNAL_KEYS.has(key)) storage[key]=localStorage.getItem(key);
-            }
-            return Object.fromEntries(Object.entries(storage).sort(([a],[b])=>a.localeCompare(b)));
-        }
-        function canonicalBackupPayload(payload) {
-            return JSON.stringify({format:'JB ERP local backup',version:2,createdAt:payload.createdAt,storage:Object.fromEntries(Object.entries(payload.storage).sort(([a],[b])=>a.localeCompare(b)))});
-        }
-        async function backupSha256(text) {
-            if(!window.crypto?.subtle) throw new Error('Secure backup integrity checks require HTTPS or localhost in a browser with Web Crypto support.');
-            const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
-            return [...new Uint8Array(digest)].map(byte=>byte.toString(16).padStart(2,'0')).join('');
-        }
-        function bytesToBase64(bytes) { let binary=''; new Uint8Array(bytes).forEach(byte=>binary+=String.fromCharCode(byte)); return btoa(binary); }
-        function base64ToBytes(value) { const binary=atob(value); return Uint8Array.from(binary,char=>char.charCodeAt(0)); }
-        async function deriveBackupKey(password,salt,iterations) {
-            const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']);
-            return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
-        }
-        async function buildBackupBlob() {
-            const createdAt=new Date().toISOString();
-            const payload={format:'JB ERP local backup',version:2,createdAt,storage:backupStorageSnapshot()};
-            const encrypt=!!document.getElementById('backupEncryptToggle')?.checked;
-            let envelope;
-            if(encrypt) {
-                const password=textVal('backupPassword');
-                if(password.length<8) throw new Error('Use a backup password with at least 8 characters.');
-                const iterations=250000,salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
-                const key=await deriveBackupKey(password,salt,iterations);
-                const ciphertext=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(canonicalBackupPayload(payload)));
-                envelope={format:'JB ERP local backup',version:2,encrypted:true,kdf:'PBKDF2-SHA-256',iterations,salt:bytesToBase64(salt),iv:bytesToBase64(iv),ciphertext:bytesToBase64(ciphertext)};
-            } else {
-                envelope={...payload,encrypted:false,checksum:await backupSha256(canonicalBackupPayload(payload))};
-            }
-            return {blob:new Blob([JSON.stringify(envelope,null,2)],{type:'application/json'}),createdAt,encrypted:encrypt};
-        }
-        function backupDownloadName(createdAt) { return `jewarbook-backup-${createdAt.slice(0,10)}${document.getElementById('backupEncryptToggle')?.checked?'-encrypted':''}.json`; }
-        function noteBackupCreated(createdAt) {
-            localStorage.setItem('jb_backup_last_created',createdAt);
-            const label=document.getElementById('backupLastSaved'); if(label) label.textContent=`Last backup created: ${new Date(createdAt).toLocaleString()}`;
-        }
-        function toggleBackupPassword() {
-            const enabled=!!document.getElementById('backupEncryptToggle')?.checked;
-            const row=document.getElementById('backupPasswordRow'); if(row) row.style.display=enabled?'block':'none';
-        }
-        async function downloadBackup() {
+        function downloadBackup() {
             if(!requirePermission('manageBackup','download backup')) return;
-            try {
-                const result=await buildBackupBlob(),url=URL.createObjectURL(result.blob),a=document.createElement('a');
-                a.href=url;a.download=backupDownloadName(result.createdAt);a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-                noteBackupCreated(result.createdAt);showToast(result.encrypted?'Encrypted backup downloaded.':'Backup downloaded.');
-            } catch(error) { alert(error.message||'Could not create backup.'); }
+            const data={format:'JB ERP local backup',version:1,createdAt:new Date().toISOString(),storage:{}};
+            for(let i=0;i<localStorage.length;i++){ const key=localStorage.key(i); data.storage[key]=localStorage.getItem(key); }
+            const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}), url=URL.createObjectURL(blob), a=document.createElement('a'); a.href=url; a.download=`jewarbook-backup-${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); showToast('Backup downloaded.');
         }
         async function shareBackup() {
             if(!requirePermission('manageBackup','share backup')) return;
-            try {
-                const result=await buildBackupBlob(),file=new File([result.blob],backupDownloadName(result.createdAt),{type:'application/json'});
-                if(navigator.share&&navigator.canShare?.({files:[file]})) {
-                    try { await navigator.share({files:[file],title:'JB ERP backup'});noteBackupCreated(result.createdAt);return; } catch(error) { if(error.name==='AbortError') return; }
-                }
-                const url=URL.createObjectURL(result.blob),a=document.createElement('a');a.href=url;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);noteBackupCreated(result.createdAt);
-            } catch(error) { alert(error.message||'Could not create backup.'); }
+            const data={format:'JB ERP local backup',version:1,createdAt:new Date().toISOString(),storage:{}};
+            for(let i=0;i<localStorage.length;i++){ const key=localStorage.key(i); data.storage[key]=localStorage.getItem(key); }
+            const file=new File([JSON.stringify(data,null,2)],'jewarbook-backup.json',{type:'application/json'});
+            if(navigator.share && navigator.canShare?.({files:[file]})){ try { await navigator.share({files:[file],title:'JewarBook backup'}); return; } catch(e) {} }
+            downloadBackup();
         }
-        function backupRecordSummary(storage) {
-            const labels={jb_customer_accounts:'Customer accounts',jb_local_users:'Staff / admin accounts',jb_sell_orders:'Sale orders',jb_sale_logs:'Sale bills',jb_purchase_orders:'Purchase orders',jb_purchase_logs:'Purchase bills',jb_karigar_txns:'Karigar ledger entries',jb_operating_expenses:'Expenses',jb_estimates:'Estimates',jb_girvi_records:'Girvi records',jb_emi_sales:'EMI schemes',jb_kitty_records:'Kitty records',jb_cash_metal_entries:'Cash / metal vouchers',jb_credit_notes:'Credit notes',jb_loyalty_data:'Loyalty ledger',jb_customer_chat:'Customer chat'};
-            return Object.entries(labels).map(([key,label])=>{let count=0;try{const value=JSON.parse(storage[key]||'[]');count=Array.isArray(value)?value.length:(Array.isArray(value.ledger)?value.ledger.length+((value.withdrawals||[]).length):Object.keys(value).length);}catch(error){}return `<div class="settings-row"><span>${escapeHtml(label)}</span><b>${count}</b></div>`;}).join('');
-        }
-        function currentBackupFingerprintSet() { const value=safeGet('jb_backup_imported_fingerprints',[]);return Array.isArray(value)?value:[]; }
-        function validateBackupStorage(storage) {
-            if(!storage||typeof storage!=='object'||Array.isArray(storage)) throw new Error('Backup data section is missing or invalid.');
-            const entries=Object.entries(storage);
-            if(!entries.length) throw new Error('Backup contains no JB ERP data.');
-            if(entries.length>1000) throw new Error('Backup contains an unreasonable number of storage entries.');
-            for(const [key,value] of entries) {
-                if(!/^jb_[a-z0-9_-]+$/i.test(key)||BACKUP_INTERNAL_KEYS.has(key)) throw new Error(`Unsupported backup storage key: ${key}`);
-                if(typeof value!=='string'||value.length>50*1024*1024) throw new Error(`Invalid or oversized value for ${key}.`);
-                if(/^[\s]*[\[{]/.test(value)) { try { JSON.parse(value); } catch(error) { throw new Error(`Stored data for ${key} is corrupt.`); } }
-            }
-            return Object.fromEntries(entries.sort(([a],[b])=>a.localeCompare(b)));
-        }
-        async function decodeAndValidateBackup(raw,password='') {
-            if(raw?.format!=='JB ERP local backup') throw new Error('This is not a JB ERP backup file.');
-            let payload,legacy=false;
-            if(raw.encrypted===true) {
-                if(raw.version!==2||raw.kdf!=='PBKDF2-SHA-256'||!Number.isInteger(raw.iterations)||raw.iterations<100000||raw.iterations>1000000) throw new Error('Encrypted backup settings are unsupported or invalid.');
-                if(!password) throw new Error('Enter the password for this encrypted backup.');
-                try {
-                    const key=await deriveBackupKey(password,base64ToBytes(raw.salt),raw.iterations);
-                    const clear=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64ToBytes(raw.iv)},key,base64ToBytes(raw.ciphertext));
-                    payload=JSON.parse(new TextDecoder().decode(clear));
-                } catch(error) { throw new Error('Could not decrypt the backup. Check the password and file integrity.'); }
-            } else {
-                if(!raw.storage||typeof raw.storage!=='object') throw new Error('Backup data section is missing or invalid.');
-                payload={format:raw.format,version:raw.version,createdAt:raw.createdAt,storage:raw.storage};
-                if(raw.version===1) legacy=true;
-                else if(raw.version===2) {
-                    if(raw.encrypted!==false||typeof raw.checksum!=='string') throw new Error('Backup integrity information is missing.');
-                    const expected=await backupSha256(canonicalBackupPayload(payload));
-                    if(expected!==raw.checksum) throw new Error('Backup integrity check failed. The file may be damaged or modified.');
-                } else throw new Error('This backup version is not supported.');
-            }
-            if(payload.format!=='JB ERP local backup'||![1,2].includes(payload.version)||!payload.createdAt) throw new Error('Backup header is invalid.');
-            payload.storage=validateBackupStorage(payload.storage);
-            const fingerprint=await backupSha256(canonicalBackupPayload({...payload,version:2}));
-            return {payload,fingerprint,legacy,encrypted:raw.encrypted===true};
-        }
-        function openBackupPreview(parsed) {
-            pendingBackupRestore=parsed;
-            const isDuplicate=currentBackupFingerprintSet().includes(parsed.fingerprint);
-            setHtml('backupPreviewContent',`<div class="form-card" style="background:#f7fbff;"><b>File:</b> ${escapeHtml(parsed.fileName||'JB ERP backup')}<br><b>Created:</b> ${escapeHtml(new Date(parsed.payload.createdAt).toLocaleString())}<br><b>Format:</b> Version ${parsed.payload.version}${parsed.encrypted?' · Password-encrypted':''}${parsed.legacy?' · Legacy file without checksum':''}<br><b>JB ERP storage entries:</b> ${Object.keys(parsed.payload.storage).length}</div><strong>Records in this backup</strong>${backupRecordSummary(parsed.payload.storage)}<div class="form-card" style="margin-top:10px;background:#fff8e8;color:#714f00;">Restore replaces matching JB ERP records, settings and local account data on this device. Unrelated browser data is preserved. Save a current backup first if you may need today’s data.</div>${parsed.legacy?'<p style="font-size:11px;color:#9a6700;margin-top:8px;">Legacy backup has no cryptographic checksum; its contents were structurally validated only.</p>':''}${isDuplicate?'<p style="color:var(--danger);font-weight:bold;margin-top:8px;">This exact backup was already restored on this device. Import blocked to prevent duplicate restore.</p>':''}`);
-            document.getElementById('backupPreviewContent').style.display='block';
-            document.getElementById('backupPasswordUnlock').style.display='none';
-            const button=document.getElementById('backupRestoreConfirm');button.style.display='block';button.disabled=isDuplicate;
-            document.getElementById('backupPreviewOverlay').style.display='flex';
-        }
-        function closeBackupPreview() { document.getElementById('backupPreviewOverlay').style.display='none';pendingBackupRestore=null;setVal('backupRestorePassword',''); }
-        async function unlockBackupPreview() {
-            if(!pendingBackupRestore?.raw) return;
-            try {
-                const parsed=await decodeAndValidateBackup(pendingBackupRestore.raw,textVal('backupRestorePassword'));
-                parsed.fileName=pendingBackupRestore.fileName;openBackupPreview(parsed);setVal('backupRestorePassword','');
-            } catch(error) { alert(error.message||'Could not validate backup.'); }
-        }
-        async function restoreBackup(event) {
+        function restoreBackup(event) {
             if(!requirePermission('manageBackup','restore backup')) { event.target.value=''; return; }
             const file=event.target.files?.[0]; if(!file) return;
-            try {
-                if(file.size>50*1024*1024) throw new Error('Backup file exceeds the 50 MB safety limit.');
-                const raw=JSON.parse(await file.text());
-                if(raw?.encrypted===true) {
-                    pendingBackupRestore={raw,fileName:file.name};
-                    document.getElementById('backupPreviewContent').style.display='none';document.getElementById('backupRestoreConfirm').style.display='none';document.getElementById('backupPasswordUnlock').style.display='block';document.getElementById('backupPreviewOverlay').style.display='flex';
-                } else {
-                    const parsed=await decodeAndValidateBackup(raw);parsed.fileName=file.name;openBackupPreview(parsed);
-                }
-            } catch(error) { alert(error.message||'Backup file is invalid or unreadable.'); }
-            finally { event.target.value=''; }
-        }
-        function restoreJBStorageSafely(newStorage,fingerprint) {
-            const previous={};
-            for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key?.startsWith('jb_')&&!BACKUP_INTERNAL_KEYS.has(key))previous[key]=localStorage.getItem(key);}
-            const rollback=()=>{for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key?.startsWith('jb_')&&!BACKUP_INTERNAL_KEYS.has(key))localStorage.removeItem(key);}Object.entries(previous).forEach(([key,value])=>localStorage.setItem(key,value));};
-            try {
-                for(let i=localStorage.length-1;i>=0;i--){const key=localStorage.key(i);if(key?.startsWith('jb_')&&!BACKUP_INTERNAL_KEYS.has(key))localStorage.removeItem(key);}
-                Object.entries(newStorage).forEach(([key,value])=>localStorage.setItem(key,value));
-                const imported=currentBackupFingerprintSet();if(!imported.includes(fingerprint)) imported.push(fingerprint);
-                localStorage.setItem('jb_backup_imported_fingerprints',JSON.stringify(imported.slice(-50)));
-            } catch(error) {
-                try { rollback(); } catch(rollbackError) { throw new Error('Restore failed and automatic rollback was incomplete. Do not close this page; browser storage may be full.'); }
-                throw new Error('Restore could not be saved (storage may be full). Existing data was restored.');
-            }
-        }
-        function confirmBackupRestore() {
-            if(!requirePermission('manageBackup','restore backup')) return;
-            const parsed=pendingBackupRestore;if(!parsed?.payload) return alert('Unlock and validate the backup first.');
-            if(currentBackupFingerprintSet().includes(parsed.fingerprint)) return alert('This backup was already restored on this device.');
-            if(!confirm(`Restore backup created ${new Date(parsed.payload.createdAt).toLocaleString()}? Matching JB ERP data, settings and local logins will be replaced.`)) return;
-            if(!confirm('Final confirmation: replace the current JB ERP data on this device now?')) return;
-            try { restoreJBStorageSafely(parsed.payload.storage,parsed.fingerprint);closeBackupPreview();location.reload(); }
-            catch(error) { alert(error.message||'Restore failed. Existing data was not intentionally cleared.'); }
-        }
-        function renderBackupLastSaved() {
-            const label=document.getElementById('backupLastSaved'),date=localStorage.getItem('jb_backup_last_created');
-            if(label) label.textContent=date?`Last backup created: ${new Date(date).toLocaleString()}`:'No backup created on this device yet.';
-        }
-        function checkBackupReminder() {
-            const frequency=appPreferences().backupReminder;
-            if(!['weekly','monthly'].includes(frequency)||!hasPermission('manageBackup')||document.getElementById('pinLockOverlay')?.style.display==='flex') return;
-            const now=new Date(),last=localStorage.getItem('jb_backup_last_created'),days=frequency==='weekly'?7:30;
-            const due=!last||!Number.isFinite(new Date(last).getTime())||(now-new Date(last))>=days*86400000;
-            if(!due||localStorage.getItem('jb_backup_last_reminder')===now.toISOString().slice(0,10)) return;
-            localStorage.setItem('jb_backup_last_reminder',now.toISOString().slice(0,10));
-            setTimeout(()=>{if(confirm(`Your ${frequency} backup reminder is due. Download a backup now?`)) downloadBackup();},800);
+            const reader=new FileReader(); reader.onload=() => { try { const backup=JSON.parse(reader.result); if(!backup.storage || typeof backup.storage !== 'object') throw new Error('Invalid backup'); if(!confirm('Restore backup? Current local data will be replaced.')) return; localStorage.clear(); Object.entries(backup.storage).forEach(([key,value]) => localStorage.setItem(key,String(value))); location.reload(); } catch(e) { alert('Backup file is invalid or unreadable.'); } finally { event.target.value=''; } }; reader.readAsText(file);
         }
         function exportReportCsv() {
             if(!requirePermission('viewReports','export reports')) return;
@@ -1626,18 +1304,12 @@
         
         function openHistoryCategory(type) { setVal('historyTypeFilter',type); switchTab('tab-history',document.querySelectorAll('.b-nav-item')[2]); renderAllTransactions(); }
         function switchTab(id, btn) { 
-            const tabPermission={'tab-home':'viewSales','tab-stock':'viewStock','tab-history':'viewHistory','tab-karigar':'manageKarigar','tab-ledgers':'viewLedgers','tab-reports':'viewReports','tab-business':'manageBusiness','tab-booking-pl':'viewReports','tab-menu':'manageSettings'}[id];
-            const tab=document.getElementById(id);
-            if(!tab || !tab.classList.contains('tab-section')) return;
+            const tabPermission={'tab-home':'viewSales','tab-stock':'viewStock','tab-history':'viewHistory','tab-karigar':'manageKarigar','tab-ledgers':'viewLedgers','tab-reports':'viewReports','tab-business':'manageBusiness','tab-menu':'manageSettings'}[id];
             if(id==='tab-menu' && !hasPermission('manageSettings') && !hasPermission('manageUsers')) return requirePermission('manageSettings','open settings');
             if(tabPermission && id!=='tab-menu' && !requirePermission(tabPermission,'open this section')) return;
-            const tabOrder=['tab-home','tab-stock','tab-history','tab-karigar','tab-ledgers','tab-reports','tab-business','tab-booking-pl','tab-menu'];
-            const navItems=[...document.querySelectorAll('.b-nav-item')];
-            const activeButton=btn && btn.classList ? btn : navItems[tabOrder.indexOf(id)];
             document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active')); 
-            navItems.forEach(item=>item.classList.toggle('active',item===activeButton));
-            if(activeButton && activeButton.scrollIntoView && window.matchMedia('(max-width: 759px)').matches) activeButton.scrollIntoView({block:'nearest',inline:'nearest'});
-            tab.classList.add('active'); window.scrollTo(0, 0); 
+            if(btn && btn.classList) { document.querySelectorAll('.b-nav-item').forEach(b => b.classList.remove('active')); btn.classList.add('active'); } 
+            document.getElementById(id).classList.add('active'); window.scrollTo(0, 0); 
             if(id === 'tab-karigar') renderKarigarLedgers(); if(id === 'tab-history') renderAllTransactions();
             if(id === 'tab-stock') renderItemStock(); if(id === 'tab-ledgers') renderPartyLedgers('customer'); if(id === 'tab-reports') renderReports(); if(id === 'tab-business') renderBusinessRecords();
         }
@@ -2241,7 +1913,7 @@
 
         // ================= SALE BILL LOGIC =================
         function resetSaleForm() { setVal('saleCustomer', ''); setVal('saleCustomerType','B2C'); setVal('saleCustomerGstin',''); setVal('saleSupplyState',''); toggleSaleCustomerTaxFields(); setHtml('saleItemsContainer', ''); setHtml('saleOldMetalItemsContainer', ''); ['saleTotalAmt','salePendingAmt','salePayCash','salePayBank','saleOrderAdvCash'].forEach(id => setVal(id,0)); setHtml('saleTaxSummary', ''); setHtml('s_dispOldDeductible', "₹0"); setVal('linkedOrderData', '{}'); const creditToggle=document.getElementById('saleCreateCreditNote'); if(creditToggle) creditToggle.checked=true; }
-        function openSaleModal(index = -1) { if(!requirePermission(index>-1?'editSales':'createSales','open sale bill form')) return; setVal('saleEditIndex', index); resetSaleForm(); setVal('s_LiveGoldRate', liveGoldRate10g); setVal('s_LiveSilverRate', liveSilverRateKg); if(index > -1) { document.getElementById('saleModalTitle').innerText = "Edit Sale Bill"; const s = saleLogs[index]; setVal('saleCustomer', s.customer || ""); setVal('saleCustomerType', s.customerType || 'B2C'); setVal('saleCustomerGstin', s.customerGstin || ''); setVal('saleSupplyState', s.supplyState || ''); toggleSaleCustomerTaxFields(); setVal('salePayCash', s.payments?.cash||0); setVal('salePayBank', s.payments?.bank||0); document.getElementById('saleLoyaltyEligible').checked=s.loyaltyEligible!==false; toggleSaleCustomerTaxFields(); (s.oldMetals || []).forEach(om => addSaleOldMetalRow(om)); (s.items || []).forEach(it => addSaleItemRow(it)); } else { document.getElementById('saleModalTitle').innerText = "New Sale Bill"; document.getElementById('saleLoyaltyEligible').checked=true; addSaleItemRow(); } openModal('modal-sale'); }
+        function openSaleModal(index = -1) { if(!requirePermission(index>-1?'editSales':'createSales','open sale bill form')) return; setVal('saleEditIndex', index); resetSaleForm(); setVal('s_LiveGoldRate', liveGoldRate10g); setVal('s_LiveSilverRate', liveSilverRateKg); if(index > -1) { document.getElementById('saleModalTitle').innerText = "Edit Sale Bill"; const s = saleLogs[index]; setVal('saleCustomer', s.customer || ""); setVal('saleCustomerType', s.customerType || 'B2C'); setVal('saleCustomerGstin', s.customerGstin || ''); setVal('saleSupplyState', s.supplyState || ''); toggleSaleCustomerTaxFields(); setVal('salePayCash', s.payments?.cash||0); setVal('salePayBank', s.payments?.bank||0); (s.oldMetals || []).forEach(om => addSaleOldMetalRow(om)); (s.items || []).forEach(it => addSaleItemRow(it)); } else { document.getElementById('saleModalTitle').innerText = "New Sale Bill"; addSaleItemRow(); } openModal('modal-sale'); }
         function resetLinkedOrders() { if(textVal('linkedOrderData') !== '{}') { setVal('linkedOrderData', '{}'); setVal('saleOrderAdvCash', 0); showToast("Linkages reset due to name change."); calculateSaleTotal(); } }
         function openLinkOrdersModal() { const cust = textVal('saleCustomer').toLowerCase(); if(!cust) return alert("Please enter Customer Name first!"); const pendingOrders = sellOrders.map((o, i) => ({...o, originalIndex: i})).filter(o => o.party.toLowerCase() === cust && o.status !== 'Completed' && (o.items || []).some(item => item.status === 'Ready')); if(pendingOrders.length === 0) return alert("No received / in-stock sale order items found for this customer."); const c = document.getElementById('linkOrdersListContainer'); c.innerHTML = ''; pendingOrders.forEach(o => { let html = `<div class="form-card" style="border:1px solid var(--primary);"><strong style="color:var(--primary);">Order Date: ${safeDateStr(o.date)}</strong><div class="divider"></div><label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:bold;margin-bottom:8px;"><input type="checkbox" id="linkSaleAllItems_${o.originalIndex}" onchange="toggleLinkedSelection('chk-link-item',${o.originalIndex},this.checked)"> Select all items to bill</label>`; o.items.forEach((it, idx) => { if(it.status !== 'Ready') return; html += `<label style="display:flex; align-items:center; gap:8px; margin-bottom:6px; font-size:13px; color:#333;"><input type="checkbox" class="chk-link-item" data-oidx="${o.originalIndex}" data-iidx="${idx}" onchange="syncLinkedSelectAll('chk-link-item',${o.originalIndex},'linkSaleAllItems_${o.originalIndex}')" value='${JSON.stringify(it).replace(/'/g, "&#39;")}'> <span>${escapeHtml(it.item)} (${Number(it.gWt||0).toFixed(3)}g)<br><small style="color:#666;">${saleOrderItemDetails(it)}</small></span></label>`; }); html += `<div class="grid-2" style="margin-top:10px; background:#f4f6f8; padding:8px; border-radius:6px;"><div><label>Pull Adv Cash</label><input type="number" class="form-control link-adv-cash" data-oidx="${o.originalIndex}" max="${o.advance}" value="${o.advance}" style="padding:6px;"></div><div><label>Pull Metal</label><input type="number" class="form-control link-adv-metal" data-oidx="${o.originalIndex}" data-mtype="${o.advanceMetalType||'GOLD'}" max="${o.advanceMetal}" value="${o.advanceMetal}" style="padding:6px;"></div></div>`; if(o.oldMetals && o.oldMetals.length > 0) { html += `<div style="margin-top:8px; font-size:11px; color:#b8860b;"><b>Old Metals found in Order:</b></div><label style="display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px;"><input type="checkbox" id="linkSaleAllOld_${o.originalIndex}" checked onchange="toggleLinkedSelection('chk-link-old-metal',${o.originalIndex},this.checked)"> Select all old metals</label>`; o.oldMetals.forEach((om, idx) => { html += `<label style="display:flex; align-items:center; gap:8px; margin-bottom:4px; font-size:12px;"><input type="checkbox" class="chk-link-old-metal" data-oidx="${o.originalIndex}" data-iidx="${idx}" onchange="syncLinkedSelectAll('chk-link-old-metal',${o.originalIndex},'linkSaleAllOld_${o.originalIndex}')" value='${JSON.stringify(om).replace(/'/g, "&#39;")}' checked> Pull ${om.gWt}g ${om.metal} (₹${om.val})</label>`; }); } html += `</div>`; c.innerHTML += html; }); openModal('modal-link-orders'); }
         function applyLinkedOrders() { let linkages = JSON.parse(textVal('linkedOrderData') || '{}'); document.querySelectorAll('.chk-link-item:checked').forEach(chk => { const oIdx = chk.getAttribute('data-oidx'); const iIdx = parseInt(chk.getAttribute('data-iidx')); const itemData = JSON.parse(chk.value); if(!linkages[oIdx]) linkages[oIdx] = { items: [], oldMetals: [], cash: 0, metal: 0, mType: 'GOLD' }; if(!linkages[oIdx].items.includes(iIdx)) { linkages[oIdx].items.push(iIdx); addSaleItemRow(itemData); } }); document.querySelectorAll('.chk-link-old-metal:checked').forEach(chk => { const oIdx = chk.getAttribute('data-oidx'); const iIdx = parseInt(chk.getAttribute('data-iidx')); const omData = JSON.parse(chk.value); if(!linkages[oIdx]) linkages[oIdx] = { items: [], oldMetals: [], cash: 0, metal: 0, mType: 'GOLD' }; if(!linkages[oIdx].oldMetals.includes(iIdx)) { linkages[oIdx].oldMetals.push(iIdx); addSaleOldMetalRow(omData); } }); document.querySelectorAll('.link-adv-cash').forEach(inp => { const oIdx = inp.getAttribute('data-oidx'); const v = parseFloat(inp.value)||0; if(v > 0) { if(!linkages[oIdx]) linkages[oIdx] = { items: [], oldMetals: [], cash: 0, metal: 0, mType: 'GOLD' }; linkages[oIdx].cash += v; setVal('saleOrderAdvCash', val('saleOrderAdvCash') + v); } }); document.querySelectorAll('.link-adv-metal').forEach(inp => { const oIdx = inp.getAttribute('data-oidx'); const v = parseFloat(inp.value)||0; const mType = inp.getAttribute('data-mtype') || 'GOLD'; if(v > 0) { if(!linkages[oIdx]) linkages[oIdx] = { items: [], oldMetals: [], cash: 0, metal: 0, mType: mType }; linkages[oIdx].metal += v; linkages[oIdx].mType = mType; const rate = mType === 'GOLD' ? val('s_LiveGoldRate') : val('s_LiveSilverRate'); const calcVal = Math.round(v * (mType === 'GOLD' ? rate * goldPurityRateFactor(99.5) / 10 : rate/1000)); addSaleOldMetalRow({ metal: mType, gWt: v, purity: 100, val: calcVal }); } }); setVal('linkedOrderData', JSON.stringify(linkages)); closeModal('modal-link-orders'); calculateSaleTotal(); showToast("✅ Data Pulled from Orders!"); }
@@ -2292,13 +1964,8 @@
             const isB2B = textVal('saleCustomerType') === 'B2B';
             const gstinBox = document.getElementById('saleGstinBox');
             const stateBox = document.getElementById('saleSupplyStateBox');
-            const loyaltyOption = document.getElementById('saleLoyaltyEligible');
             if(gstinBox) gstinBox.style.display = isB2B ? 'block' : 'none';
             if(stateBox) stateBox.style.display = isB2B ? 'block' : 'none';
-            if(loyaltyOption) {
-                loyaltyOption.disabled = isB2B;
-                if(isB2B) loyaltyOption.checked = false;
-            }
         }
 
         // Applies the configured GST mode to the bill value; inclusive pricing extracts tax from the entered total.
@@ -2342,13 +2009,13 @@
             let itms=[], oms=[]; 
             document.querySelectorAll('.s_item-row-box').forEach(r=>{ itms.push(extractItemData(r, 's', false)); }); 
             document.querySelectorAll('.s-old-metal-row').forEach(r => { oms.push({ metal: r.querySelector('.so-metal').value, gWt: parseFloat(r.querySelector('.so-gwt').value)||0, purity: parseFloat(r.querySelector('.so-purity').value)||80, val: parseFloat(r.querySelector('.so-val').value)||0 }); }); 
-            const saleObj = { customer: p, customerType:textVal('saleCustomerType') || 'B2C', customerGstin:textVal('saleCustomerGstin').toUpperCase(), supplyState:textVal('saleSupplyState'), items: itms, oldMetals: oms, taxableValue:currentSaleTax.base, taxAmount:currentSaleTax.tax, total: val('saleTotalAmt'), linkedOrders: linkages, payments: { cash: val('salePayCash'), bank: val('salePayBank'), pulledAdv: val('saleOrderAdvCash'), pending: val('salePendingAmt') }, loyaltyId:editIdx>-1?(saleLogs[editIdx].loyaltyId||`sale_${Date.now()}_${Math.random().toString(36).slice(2,8)}`):`sale_${Date.now()}_${Math.random().toString(36).slice(2,8)}`, loyaltyApproved:editIdx>-1?!!saleLogs[editIdx].loyaltyApproved:true, loyaltyEligible:!!document.getElementById('saleLoyaltyEligible').checked, date: editIdx > -1 ? (saleLogs[editIdx].date || new Date().toISOString()) : new Date().toISOString() }; 
+            const saleObj = { customer: p, customerType:textVal('saleCustomerType') || 'B2C', customerGstin:textVal('saleCustomerGstin').toUpperCase(), supplyState:textVal('saleSupplyState'), items: itms, oldMetals: oms, taxableValue:currentSaleTax.base, taxAmount:currentSaleTax.tax, total: val('saleTotalAmt'), linkedOrders: linkages, payments: { cash: val('salePayCash'), bank: val('salePayBank'), pulledAdv: val('saleOrderAdvCash'), pending: val('salePendingAmt') }, date: editIdx > -1 ? (saleLogs[editIdx].date || new Date().toISOString()) : new Date().toISOString() }; 
             if(editIdx > -1) { saleLogs[editIdx] = saleObj; } else { saleLogs.unshift(saleObj); }
             if(editIdx === -1 && document.getElementById('saleCreateCreditNote').checked && oms.length) {
                 creditNotes.unshift({ customer:p, saleDate:saleObj.date, saleTotal:saleObj.total, linkedSaleCustomer:p, oldMetals:oms, amount:oms.reduce((sum,om)=>sum+(Number(om.val)||0),0), date:new Date().toISOString(), status:'Applied to linked sale bill' });
                 localStorage.setItem('jb_credit_notes', JSON.stringify(creditNotes));
             }
-            localStorage.setItem('jb_sale_logs', JSON.stringify(saleLogs)); recordLoyaltyForApprovedSale(saleObj); renderDashboard(); renderAllTransactions(); renderPartyLedgers('customer'); showToast("✅ Sale Bill Saved & Stock Updated!"); 
+            localStorage.setItem('jb_sale_logs', JSON.stringify(saleLogs)); renderDashboard(); renderAllTransactions(); renderPartyLedgers('customer'); showToast("✅ Sale Bill Saved & Stock Updated!"); 
         }
 
         // ================= KARIGAR MODULE =================
@@ -2505,98 +2172,6 @@
             const summary = `<div class="card" style="cursor:default; border-left:4px solid var(--primary);"><strong>Voucher Net Balance</strong><div class="grid-3" style="margin-top:8px;"><div>Cash<br><b>₹${cashVoucherNet.toLocaleString('en-IN')}</b></div><div>Gold<br><b>${metalVoucherNet('GOLD').toFixed(3)}g</b></div><div>Silver<br><b>${metalVoucherNet('SILVER').toFixed(3)}g</b></div></div><small style="color:#777;">Totals from Cash / Metal vouchers only.</small></div>`;
             setHtml('businessRecordList', summary + (cards.join('') || '<div class="card" style="cursor:default;color:#777;">No business records yet.</div>'));
             filterBusinessRecords(selectedBusinessRecordType, false);
-        }
-
-        // ================= BOOKING PROFIT / LOSS CALCULATOR =================
-        function renderBookingPL() {
-            const money = amount => `₹${(Number(amount) || 0).toLocaleString('en-IN', { minimumFractionDigits:2, maximumFractionDigits:2 })}`;
-            const dayNumber = value => {
-                if(!value) return null;
-                const match = String(value).slice(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/);
-                if(!match) return null;
-                const time = Date.UTC(Number(match[1]), Number(match[2])-1, Number(match[3]));
-                return Number.isFinite(time) ? Math.floor(time / 86400000) : null;
-            };
-            const amountIfStored = (record, key) => {
-                if(!record || record[key] === undefined || record[key] === null || record[key] === '') return null;
-                const number = Number(record[key]);
-                return Number.isFinite(number) && number >= 0 ? number : null;
-            };
-            const linkedBills = new Map();
-            const unmatchedBills = [];
-            saleLogs.forEach((bill, billIndex) => {
-                const links = bill.linkedOrders && typeof bill.linkedOrders === 'object' ? bill.linkedOrders : {};
-                const indexes = Object.keys(links).map(Number).filter(index => Number.isInteger(index) && index >= 0);
-                let matched = false;
-                indexes.forEach(orderIndex => {
-                    const order = sellOrders[orderIndex];
-                    if(!order || normalizeParty(order.party) !== normalizeParty(bill.customer)) return;
-                    if(!linkedBills.has(orderIndex)) linkedBills.set(orderIndex, []);
-                    linkedBills.get(orderIndex).push({ bill, billIndex });
-                    matched = true;
-                });
-                if(!matched) unmatchedBills.push({ bill, billIndex });
-            });
-
-            let totalBlocked = 0, totalInterest = 0, totalOrderValue = 0, capitalCount = 0, interestCount = 0;
-            const rows = sellOrders.map((order, orderIndex) => {
-                const bills = linkedBills.get(orderIndex) || [];
-                const blocked = amountIfStored(order, 'pending');
-                const orderValue = amountIfStored(order, 'total');
-                if(blocked !== null) { totalBlocked += blocked; capitalCount++; }
-                if(orderValue !== null) totalOrderValue += orderValue;
-
-                const bookingDay = dayNumber(order.date);
-                const singleBill = bills.length === 1 ? bills[0].bill : null;
-                const billDay = singleBill ? dayNumber(singleBill.date) : null;
-                const expectedDay = dayNumber(order.deliveryDate);
-                const deliveryDay = billDay !== null ? billDay : expectedDay;
-                const dateBasis = billDay !== null ? 'Linked bill date (delivery proxy)' : expectedDay !== null ? 'Expected delivery date' : '';
-                const days = bookingDay !== null && deliveryDay !== null ? deliveryDay - bookingDay : null;
-                const validDuration = days !== null && days >= 0;
-                const interest = blocked !== null && validDuration ? blocked * 0.02 * (days / 30) : null;
-                if(interest !== null) { totalInterest += interest; interestCount++; }
-                const billTotal = bills.reduce((sum, entry) => sum + (Number(entry.bill.total) || 0), 0);
-                const flags = [];
-                if(blocked === null) flags.push('Saved balance missing; blocked capital unavailable.');
-                if(bookingDay === null) flags.push('Booking date missing or invalid.');
-                if(!validDuration) flags.push(days !== null ? 'Delivery date precedes booking date.' : bills.length > 1 ? 'Multiple linked bills; no single delivery date selected.' : 'Delivery date unavailable.');
-                if(bills.length === 0) flags.push('No linked sale bill found.');
-                if(bills.length > 1) flags.push(`${bills.length} linked bills; actual delivery timing may be partial.`);
-                flags.push('Gold-rate change and actual sale profit/loss unavailable: historical booking rates and item cost basis are not stored.');
-                flags.push('Interest collected is not recorded; actual unpaid interest cannot be determined.');
-
-                const grossActual = 'Unavailable';
-                const netActual = interest === null ? 'Unavailable' : 'Unavailable · sale profit basis missing';
-                return `<article class="customer-portal-record" style="border-left:4px solid var(--primary);">
-                    <div class="flex-between"><strong>${escapeHtml(order.party || 'Customer')} · Sale Order #${orderIndex + 1}</strong><span class="stock-tag ${order.status === 'Completed' ? 'stock-good' : 'stock-warn'}">${escapeHtml(order.status || 'Pending')}</span></div>
-                    <p>Booked ${safeDateStr(order.date) || '—'} · Expected delivery ${safeDateStr(order.deliveryDate) || 'Not recorded'} · ${bills.length} linked sale bill(s)</p>
-                    <div class="grid-2" style="margin-top:10px;">
-                        <div><small>Order value</small><br><b>${orderValue === null ? 'Unavailable' : money(orderValue)}</b></div>
-                        <div><small>Advance recorded</small><br><b>${amountIfStored(order, 'advance') === null ? 'Unavailable' : money(amountIfStored(order, 'advance'))}</b></div>
-                        <div><small>Blocked capital · saved pending balance</small><br><b>${blocked === null ? 'Unavailable' : money(blocked)}</b></div>
-                        <div><small>Linked bill total${bills.length === 1 ? ` · ${safeDateStr(singleBill.date) || 'date missing'}` : ''}</small><br><b>${bills.length ? money(billTotal) : 'No linked bill'}</b></div>
-                        <div><small>Booking-to-delivery duration${dateBasis ? ` · ${dateBasis}` : ''}</small><br><b>${validDuration ? `${days} days · ${(days/30).toFixed(2)} months` : 'Unavailable'}</b></div>
-                        <div><small>2% monthly interest opportunity cost</small><br><b>${interest === null ? 'Unavailable' : money(interest)}</b></div>
-                        <div><small>Gold rate difference / actual sale P&amp;L</small><br><b>${grossActual}</b></div>
-                        <div><small>Net profit/loss after interest</small><br><b>${netActual}</b></div>
-                    </div>
-                    ${interest !== null ? `<div style="margin-top:8px;padding:8px;border-radius:6px;background:#fff8e8;font-size:12px;"><b>Potential loss if no interest was collected:</b> ${money(interest)} · ${orderValue > 0 ? `${(interest/orderValue*100).toFixed(2)}% of order value` : 'Loss percentage unavailable; order value missing or zero'}<br><small>Conditional estimate only; this app does not record interest collections.</small></div>` : ''}
-                    <div style="margin-top:8px;padding:8px;border-radius:6px;background:#f7fbff;font-size:11px;color:#5f6368;"><b>Data notes:</b> ${flags.map(escapeHtml).join(' ')}</div>
-                </article>`;
-            });
-
-            const potentialLossPercent = totalOrderValue > 0 ? totalInterest / totalOrderValue * 100 : null;
-            const unmatchedMarkup = unmatchedBills.length ? `<div class="card" style="cursor:default;border-left:4px solid var(--warning);"><strong>Sale Bills without a reliable order link</strong><p style="font-size:11px;color:#666;margin-top:6px;">These bills are not assigned to an order to avoid guessing. ${unmatchedBills.map(({bill}) => `${escapeHtml(bill.customer || 'Customer')} · ${safeDateStr(bill.date) || 'date missing'} · ${money(bill.total)}`).join('<br>')}</p></div>` : '';
-            const summary = `<div class="card" style="cursor:default;border-left:4px solid var(--success);"><strong>Automatic Summary · ${sellOrders.length} sale order(s)</strong><div class="grid-2" style="margin-top:10px;">
-                <div><small>Stored blocked balances${capitalCount < sellOrders.length ? ` · ${capitalCount}/${sellOrders.length} available` : ''}</small><br><b>${money(totalBlocked)}</b></div>
-                <div><small>2% monthly opportunity cost${interestCount ? ` · ${interestCount} order(s) with dates and balance` : ''}</small><br><b>${money(totalInterest)}</b></div>
-                <div><small>Potential loss if no interest collected</small><br><b>${interestCount ? money(totalInterest) : 'Unavailable'}</b><br><small>Conditional; received interest is not stored.</small></div>
-                <div><small>Potential no-interest loss / order value</small><br><b>${potentialLossPercent === null ? 'Unavailable' : `${potentialLossPercent.toFixed(2)}%`}</b></div>
-                <div><small>Gold-rate profit/loss · actual sale P&amp;L</small><br><b>Unavailable</b></div>
-                <div><small>Net profit/loss after interest</small><br><b>Unavailable · missing sale cost / rate basis</b></div>
-            </div><p style="font-size:11px;color:#777;line-height:1.5;margin-top:8px;">Interest is a 30-day-month estimate on each order's saved pending balance. Bill date is used only as a delivery proxy when exactly one linked bill exists; otherwise the recorded expected delivery date is used. Summary interest includes only orders with a stored balance and a valid booking-to-delivery date.</p></div>`;
-            setHtml('bookingPLResults', summary + (rows.join('') || '<div class="card" style="cursor:default;color:#777;">No sale orders are saved yet.</div>') + unmatchedMarkup);
         }
 
         // ================= REPORTS & OPERATING P&L =================
@@ -2790,7 +2365,6 @@
                     <div style="margin-top:6px; color:#666;">Karigar: ${escapeHtml(item.karigarName || 'Karigar')} · ${Number(item.gWt || 0).toFixed(3)}g ${escapeHtml(item.metal || '')}</div>
                 </div>`).join('') : '<div class="card" style="cursor:default; color:#777;">No pending karigar work.</div>');
             renderTopCustomers();
-            renderBookingPL();
         }
 
         function purchaseHistoryDetail(record) {
@@ -2880,7 +2454,7 @@
             setHtml('karigarLedgerList', html || '<div class="card" style="cursor:default; color:#777;">No karigar entries yet.</div>');
         }
 
-        window.onload = () => { initHomeRates(); loadAppPreferences(); loadModuleSettings(); loadSecurityPreferences(); initializePinLock(); renderFirmProfiles(); loadBusinessSettings(); renderPermissionEditor(); setVal('girviStartDate', new Date().toISOString().slice(0,10)); updateMetalRecordPreview('girvi'); updateMetalRecordPreview('emi'); openBusinessForm('none'); renderDashboard(); renderKarigarLedgers(); renderAllTransactions(); renderBusinessRecords(); renderReports(); renderLocalUsers(); customerAccounts(); renderLoyaltyAdmin(); renderBackupLastSaved(); if(localUsers().length){ activeOperatorId=null; applyCurrentPermissions(); if(localUsers().every(user=>user.pinHash)) openOperatorLogin(); else showToast('Legacy staff records need PINs. Secure each account in Users & Permissions.'); } setTimeout(checkBackupReminder,1200); };
+        window.onload = () => { initHomeRates(); loadAppPreferences(); loadModuleSettings(); loadSecurityPreferences(); initializePinLock(); renderFirmProfiles(); loadBusinessSettings(); renderPermissionEditor(); setVal('girviStartDate', new Date().toISOString().slice(0,10)); updateMetalRecordPreview('girvi'); updateMetalRecordPreview('emi'); openBusinessForm('none'); renderDashboard(); renderKarigarLedgers(); renderAllTransactions(); renderBusinessRecords(); renderReports(); renderLocalUsers(); if(localUsers().length){ activeOperatorId=null; applyCurrentPermissions(); openOperatorLogin(); } };
     </script>
 </body>
 </html>
