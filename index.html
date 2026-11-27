@@ -114,6 +114,9 @@
             .header { gap:7px; padding-left:10px; padding-right:10px; font-size:16px; }
             .header .btn-sm-edit { padding:6px 8px; font-size:10px; }
             .tab-section { padding-top:2px; }
+            /* Keep the Home tab at the left edge of a horizontally scrollable mobile nav. */
+            .bottom-nav { justify-content:flex-start; }
+            .b-nav-item { flex:0 0 62px; }
         }
         .logo-icon { background:#1769aa; border-radius:9px; width:36px; height:36px; font-size:13px; }
         .header > div:last-child { letter-spacing:.2px; }
@@ -389,6 +392,17 @@
     <!-- 7. MENU & SETTINGS TAB -->
     <section id="tab-menu" class="tab-section">
         <div style="padding:15px 14px 5px;"><span class="title-sm" style="color:var(--primary-dark);font-size:14px;">Settings & Business Control Center</span></div>
+        <details class="settings-group" open><summary>Cloud Sync · Owner account</summary><div class="settings-body">
+            <p id="cloudSyncStatus" style="font-size:12px;color:#666;margin-bottom:8px;">Sign in with a cloud Owner account.</p>
+            <div class="form-group"><label>New Manager name</label><input id="cloudManagerName" class="form-control"></div>
+            <div class="form-group"><label>Manager login</label><input id="cloudManagerLogin" class="form-control"></div>
+            <div class="form-group"><label>Temporary Manager cloud password (12+ characters)</label><input id="cloudManagerPassword" type="password" class="form-control"></div>
+            <button class="btn-outline" type="button" onclick="createCloudManager()">Create Manager login</button><div class="divider"></div>
+            <p style="font-size:11px;color:#666;">Sync contains ERP transactions, tax/business settings, rates, firm profiles and module settings. It excludes PINs, customer accounts, chats and device preferences. Sync is Owner-only. Old device copies cannot overwrite a newer cloud revision.</p>
+            <button class="btn-outline" type="button" onclick="cloudUpload()">Upload this device to Cloudflare</button>
+            <button class="btn-outline" type="button" onclick="cloudDownload()">Download Cloudflare data to this device</button>
+            <button class="btn-outline" type="button" onclick="cloudLogout()">Cloud logout</button>
+        </div></details>
         <div class="card" style="cursor:default;border-left:4px solid var(--primary);">
             <div class="flex-between"><div><strong>Signed-in account</strong><div id="menuOperatorSummary" style="color:var(--text-muted);margin-top:5px;">Owner setup mode</div></div><button type="button" class="btn-sm-edit" onclick="openOperatorLogin()">Switch account</button></div>
             <small style="display:block;color:#777;margin-top:8px;">Access to settings and actions depends on the account role and permissions below.</small>
@@ -529,7 +543,7 @@
             <p style="font-size:13px;color:#666;margin-bottom:14px;">Enter the mobile number and PIN provided by the business.</p>
             <div class="form-group"><label for="customerLoginPhone">Mobile number</label><input id="customerLoginPhone" class="form-control" type="tel" inputmode="tel" autocomplete="username" required></div>
             <div class="form-group"><label for="customerLoginPin">PIN</label><input id="customerLoginPin" class="form-control" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{4,12}" maxlength="12" required></div>
-            <button class="btn-primary" type="submit">Login</button><button class="btn-outline" type="button" onclick="closeCustomerLogin()" style="margin-top:8px;">Back</button>
+                        <button class="btn-outline" type="button" onclick="closeCustomerLogin()" style="margin-top:8px;">Back</button>
         </form>
     </div>
     <div id="operatorLoginOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-labelledby="operatorLoginTitle">
@@ -538,7 +552,16 @@
             <p id="operatorLoginMessage" style="font-size:13px;color:#666;margin-bottom:14px;">Choose your account and enter its PIN. Your role controls access to the business control centre and transactions.</p>
             <div class="form-group"><label for="operatorLoginSelect">Admin or staff account</label><select id="operatorLoginSelect" class="form-control" required></select></div>
             <div class="form-group"><label for="operatorLoginPin">PIN</label><input id="operatorLoginPin" class="form-control" type="password" inputmode="numeric" autocomplete="current-password" pattern="[0-9]{4,12}" maxlength="12" required></div>
-            <button class="btn-primary" type="submit">Login</button>
+            <div class="divider"></div><h3>Cloud Owner / Manager Login</h3>
+            <div class="form-group"><label for="cloudLoginName">Cloud login</label><input id="cloudLoginName" class="form-control" autocomplete="username"></div>
+            <div class="form-group"><label for="cloudLoginPassword">Cloud password</label><input id="cloudLoginPassword" type="password" class="form-control" autocomplete="current-password"></div>
+            <button class="btn-primary" type="button" onclick="cloudLogin()">Login to Cloud</button>
+            <details><summary>First Owner setup (one time)</summary><p style="font-size:11px;color:#666;">Choose a separate cloud password of at least 12 characters; never use the device PIN.</p>
+            <div class="form-group"><label>Temporary setup secret</label><input id="cloudSetupSecret" type="password" class="form-control"></div>
+            <div class="form-group"><label>Owner name</label><input id="cloudOwnerName" class="form-control"></div>
+            <div class="form-group"><label>Owner login</label><input id="cloudOwnerLogin" class="form-control"></div>
+            <div class="form-group"><label>New cloud password</label><input id="cloudOwnerPassword" type="password" class="form-control"></div>
+            <button class="btn-primary" type="button" onclick="setupCloudOwner()">Create Owner login</button></details>            
         </form>
     </div>
     <div id="pinLockOverlay" class="pin-overlay" role="dialog" aria-modal="true" aria-labelledby="pinLockTitle">
@@ -840,6 +863,7 @@
         }
         function lockOperatorSession() {
             if(!currentOperator()) return;
+            if(cloudOperator) { cloudLogout(); document.getElementById('operatorLoginOverlay').style.display='flex'; return; }
             const previousId=activeOperatorId; activeOperatorId=null; clearTimeout(operatorSessionTimer);
             applyCurrentPermissions(); renderOperatorLoginOptions();
             const select=document.getElementById('operatorLoginSelect'); if(select && localUsers().some(user=>user.id===previousId&&user.pinHash)) select.value=previousId;
@@ -1093,8 +1117,10 @@
         };
         let activeOperatorId = null;
         function localUsers() { return safeGet('jb_local_users', []); }
-        function currentOperator() { return localUsers().find(user => user.id === activeOperatorId) || null; }
+        function currentOperator() { return cloudOperator || localUsers().find(user => user.id === activeOperatorId) || null; }
         function hasPermission(permission) {
+            if(cloudOperator) return cloudOperator.role === "Owner" || cloudOperator.permissions.includes(permission);
+            if(localStorage.getItem('jb_cloud_required')==='1') return false;
             const users = localUsers();
             if(!users.length) return true;
             const user = currentOperator();
@@ -1179,7 +1205,6 @@
             renderLocalUsers(); if(users.length && !activeOperatorId) openOperatorLogin();
         }
         function openOperatorLogin() {
-            if(!localUsers().length) return showToast('Create the first Owner account in Users & Permissions before using account login.');
             renderOperatorLoginOptions(); setVal('operatorLoginPin',''); document.getElementById('operatorLoginOverlay').style.display='flex'; setTimeout(()=>document.getElementById('operatorLoginSelect')?.focus(),0);
         }
         async function loginLocalOperator(event) {
@@ -1200,7 +1225,7 @@
             const active=currentOperator();
             document.querySelectorAll('.b-nav-item').forEach((button,index)=>{
                 const permissions=['viewSales','viewStock','viewHistory','manageKarigar','viewLedgers','viewReports','manageBusiness','manageSettings'];
-                const allowed=!localUsers().length || hasPermission(permissions[index]) || (index===7&&hasPermission('manageUsers'));
+                const allowed=(!cloudOperator&&!localUsers().length) || hasPermission(permissions[index]) || (index===7&&hasPermission('manageUsers'));
                 button.style.display=allowed?'':'none';
             });
             const actionPermissions={
@@ -2454,7 +2479,22 @@
             setHtml('karigarLedgerList', html || '<div class="card" style="cursor:default; color:#777;">No karigar entries yet.</div>');
         }
 
-        window.onload = () => { initHomeRates(); loadAppPreferences(); loadModuleSettings(); loadSecurityPreferences(); initializePinLock(); renderFirmProfiles(); loadBusinessSettings(); renderPermissionEditor(); setVal('girviStartDate', new Date().toISOString().slice(0,10)); updateMetalRecordPreview('girvi'); updateMetalRecordPreview('emi'); openBusinessForm('none'); renderDashboard(); renderKarigarLedgers(); renderAllTransactions(); renderBusinessRecords(); renderReports(); renderLocalUsers(); if(localUsers().length){ activeOperatorId=null; applyCurrentPermissions(); openOperatorLogin(); } };
+        const CLOUD_API='https://jb-erp-api.jsonu308.workers.dev';
+        const CLOUD_KEYS=['jb_sell_orders','jb_sale_logs','jb_purchase_orders','jb_purchase_logs','jb_karigar_txns','jb_operating_expenses','jb_estimates','jb_girvi_records','jb_emi_sales','jb_kitty_records','jb_cash_metal_entries','jb_credit_notes','jb_firm_profiles','jb_business_settings','jb_module_settings','jb_gold_rate','jb_silver_rate','jb_cfg_gold_alert','jb_cfg_silver_alert'];
+        let cloudOperator=null;
+        function cloudToken(){return sessionStorage.getItem('jb_cloud_token')||'';}
+        function cloudUser(u){return{id:u.id,name:u.displayName||u.login,role:u.role,permissions:Array.isArray(u.permissions)?u.permissions:[],login:u.login};}
+        function cloudStatus(s){const e=document.getElementById('cloudSyncStatus');if(e)e.innerText=s;}
+        async function cloudRequest(path,opts={}){const r=await fetch(CLOUD_API+path,{...opts,headers:{'Content-Type':'application/json',...(cloudToken()?{Authorization:'Bearer '+cloudToken()}:{}),...(opts.headers||{})}});let b={};try{b=await r.json();}catch{}if(!r.ok)throw Error(b.error||('HTTP '+r.status));return b;}
+        async function cloudLogin(){try{const login=textVal('cloudLoginName'),password=textVal('cloudLoginPassword');if(!login||!password)throw Error('Enter login and password.');const r=await cloudRequest('/v1/auth/login',{method:'POST',body:JSON.stringify({login,password})});sessionStorage.setItem('jb_cloud_token',r.access_token);localStorage.setItem('jb_cloud_required','1');cloudOperator=cloudUser(r.user);startOperatorSessionTimer();setVal('cloudLoginPassword','');document.getElementById('operatorLoginOverlay').style.display='none';applyCurrentPermissions();renderLocalUsers();cloudStatus('Signed in: '+cloudOperator.name+' · '+cloudOperator.role);}catch(e){alert('Cloud login: '+e.message);}}
+        async function setupCloudOwner(){const secret=textVal('cloudSetupSecret'),displayName=textVal('cloudOwnerName'),login=textVal('cloudOwnerLogin'),password=textVal('cloudOwnerPassword');if(!secret||!displayName||!login||password.length<12)return alert('Fill all fields; cloud password needs at least 12 characters.');if(!confirm('Create the first Owner in Cloudflare D1? This sends the Owner login and cloud password to the JB ERP API over HTTPS.'))return;try{const r=await fetch(CLOUD_API+'/v1/auth/setup-owner',{method:'POST',headers:{'Content-Type':'application/json','X-Setup-Secret':secret},body:JSON.stringify({displayName,login,password})});const b=await r.json();if(!r.ok)throw Error(b.error);setVal('cloudSetupSecret','');setVal('cloudOwnerPassword','');alert('Owner login created. Sign in using the cloud login.');}catch(e){alert('Owner setup: '+e.message);}}
+        async function createCloudManager(){if(cloudOperator?.role!=='Owner')return alert('Sign in as Owner first.');const displayName=textVal('cloudManagerName'),login=textVal('cloudManagerLogin'),password=textVal('cloudManagerPassword');if(!displayName||!login||password.length<12)return alert('Enter Manager details and password of at least 12 characters.');if(!confirm('Create a Manager login in Cloudflare D1?'))return;try{await cloudRequest('/v1/users',{method:'POST',body:JSON.stringify({displayName,login,password})});['cloudManagerName','cloudManagerLogin','cloudManagerPassword'].forEach(id=>setVal(id,''));showToast('Manager login created.');}catch(e){alert('Manager setup: '+e.message);}}
+        function collectCloudData(){const p={};for(const k of CLOUD_KEYS){const v=localStorage.getItem(k);if(v!==null){try{p[k]=JSON.parse(v);}catch{p[k]=v;}}else if(k.startsWith('jb_')&&!['jb_gold_rate','jb_silver_rate','jb_cfg_gold_alert','jb_cfg_silver_alert'].includes(k)){p[k]=k==='jb_business_settings'||k==='jb_module_settings'?{}:[];}}return p;}
+        async function cloudUpload(){if(cloudOperator?.role!=='Owner')return alert('Only the cloud Owner can sync.');try{const remote=await cloudRequest('/v1/sync'),base=localStorage.getItem('jb_cloud_revision');if(base===null&&remote.revision!==0)return alert('Cloud already has records. Download cloud data first.');if(base!==null&&Number(base)!==remote.revision)return alert('Cloud revision changed. Download the latest cloud data before uploading.');if(!confirm('Upload this device’s ERP transactions, business settings, rates and profiles to Cloudflare D1? This sends business data to the JB ERP API.'))return;const saved=await cloudRequest('/v1/sync',{method:'PUT',body:JSON.stringify({expectedRevision:remote.revision,payload:collectCloudData()})});localStorage.setItem('jb_cloud_revision',String(saved.revision));cloudStatus('Upload complete · cloud revision '+saved.revision);showToast('Cloud upload complete.');}catch(e){alert('Cloud upload: '+e.message);}}
+        async function cloudDownload(){if(cloudOperator?.role!=='Owner')return alert('Only the cloud Owner can sync.');try{const remote=await cloudRequest('/v1/sync');if(!confirm('Replace this device’s synced ERP data with cloud records? A local safety-copy file will be downloaded first.'))return;const storage={};for(const k of CLOUD_KEYS){const v=localStorage.getItem(k);if(v!==null)storage[k]=v;}const a=document.createElement('a'),blob=new Blob([JSON.stringify({storage,createdAt:new Date().toISOString()})],{type:'application/json'});a.href=URL.createObjectURL(blob);a.download='jberp-before-cloud-pull.json';a.click();for(const k of CLOUD_KEYS){if(Object.prototype.hasOwnProperty.call(remote.payload,k))localStorage.setItem(k,typeof remote.payload[k]==='string'&&['jb_gold_rate','jb_silver_rate','jb_cfg_gold_alert','jb_cfg_silver_alert'].includes(k)?remote.payload[k]:JSON.stringify(remote.payload[k]));else localStorage.removeItem(k);}localStorage.setItem('jb_cloud_revision',String(remote.revision));location.reload();}catch(e){alert('Cloud download: '+e.message);}}
+        async function cloudLogout(){const t=cloudToken();sessionStorage.removeItem('jb_cloud_token');cloudOperator=null;activeOperatorId=null;clearTimeout(operatorSessionTimer);applyCurrentPermissions();renderLocalUsers();cloudStatus('Signed out of cloud account.');if(t)fetch(CLOUD_API+'/v1/auth/logout',{method:'POST',headers:{Authorization:'Bearer '+t}}).catch(()=>{});}
+        async function restoreCloudSession(){if(!cloudToken())return;try{const r=await cloudRequest('/v1/me');cloudOperator=cloudUser(r.user);localStorage.setItem('jb_cloud_required','1');startOperatorSessionTimer();applyCurrentPermissions();renderLocalUsers();cloudStatus('Signed in: '+cloudOperator.name+' · '+cloudOperator.role);}catch{sessionStorage.removeItem('jb_cloud_token');cloudOperator=null;}}
+        window.onload = () => { initHomeRates(); loadAppPreferences(); loadModuleSettings(); loadSecurityPreferences(); initializePinLock(); renderFirmProfiles(); loadBusinessSettings(); renderPermissionEditor(); setVal('girviStartDate', new Date().toISOString().slice(0,10)); updateMetalRecordPreview('girvi'); updateMetalRecordPreview('emi'); openBusinessForm('none'); renderDashboard(); renderKarigarLedgers(); renderAllTransactions(); renderBusinessRecords(); renderReports(); renderLocalUsers(); restoreCloudSession().then(()=>{ if(!cloudOperator&&localUsers().length){ activeOperatorId=null; applyCurrentPermissions(); openOperatorLogin(); } }); };
     </script>
 </body>
 </html>
